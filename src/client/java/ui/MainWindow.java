@@ -48,7 +48,7 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     //====================================================================================================
-    // HELPER METHODS
+    // PUBLIC METHODS
     //====================================================================================================
     // Method to switch panels
     public void switchPanel(String panelName) {
@@ -69,6 +69,15 @@ public class MainWindow extends JFrame implements ActionListener {
             this.setSize(preferredSize);
             this.setMinimumSize(preferredSize);
         }
+
+        // Set resizable window based on the current panel
+        if (currentPanel instanceof LoginWindow) {
+            this.setResizable(false);
+        } else {
+            // All other windows can be resized
+            this.setResizable(true);
+        }
+
         // Center the window on the screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screenSize.width - this.getWidth()) / 2;
@@ -76,6 +85,13 @@ public class MainWindow extends JFrame implements ActionListener {
         this.setLocation(x, y);
     }
 
+    public JFrame getFrame() {
+        return this;
+    }
+
+    //====================================================================================================
+    // PRIVATE METHODS
+    //====================================================================================================
     private Component getCurrentPanel() {
         for (Component comp : mainPanel.getComponents()) {
             if (comp.isVisible()) {
@@ -83,9 +99,5 @@ public class MainWindow extends JFrame implements ActionListener {
             }
         }
         return null;
-    }
-
-    public JFrame getFrame() {
-        return this;
     }
 }
