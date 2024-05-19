@@ -13,12 +13,8 @@ public class MainWindow extends JFrame implements ActionListener {
 
     public MainWindow() {
         // Set Window title
-        this.setTitle("Java TCP Chat Client");
+        this.setTitle("ChatUp");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Add Menubar
-        MenuBar menuBar = new MenuBar();
-//        mainPanel.add(menuBar, BorderLayout.NORTH);
 
         // Set the layout manager & add panels to it
         mainPanel.setLayout(cardLayout);
@@ -85,6 +81,7 @@ public class MainWindow extends JFrame implements ActionListener {
         this.setLocation(x, y);
     }
 
+    // Method to get the MainWindow JFrame object (used in main method)
     public JFrame getFrame() {
         return this;
     }

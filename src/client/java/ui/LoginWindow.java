@@ -20,8 +20,8 @@ public class LoginWindow extends JPanel {
         JPanel bottom = bottomPanel();
 
         top.setBorder(BorderFactory.createEmptyBorder(60, 0, 5, 0));
-        center.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        center.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        bottom.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
 
         // Add components to LoginWindow
         this.add(top, BorderLayout.NORTH);
@@ -29,7 +29,7 @@ public class LoginWindow extends JPanel {
         this.add(bottom, BorderLayout.SOUTH);
 
         // Set preferred size
-        this.setPreferredSize(new Dimension(260, 380));
+        this.setPreferredSize(new Dimension(280, 400));
 
         // Component listener to focus on username field
         this.addComponentListener(new ComponentAdapter() {
