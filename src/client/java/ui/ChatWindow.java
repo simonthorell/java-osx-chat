@@ -46,7 +46,7 @@ public class ChatWindow extends JPanel {
     //====================================================================================================
     private JPanel topPanel() {
         // Configure switch button
-        JButton switchButton = new JButton("Login Page");
+        JButton switchButton = new JButton("Sign Out");
         switchButton.setActionCommand("button");
         switchButton.addActionListener(e -> {
             MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
@@ -57,7 +57,7 @@ public class ChatWindow extends JPanel {
 
         // Create a panel to hold the switch button
         JPanel northPanel = new JPanel(new BorderLayout());
-        northPanel.add(switchButton, BorderLayout.CENTER);
+        northPanel.add(switchButton, BorderLayout.EAST);
 
         return northPanel;
     }
@@ -98,6 +98,7 @@ public class ChatWindow extends JPanel {
         JButton sendButton = new JButton("Send");
         sendButton.putClientProperty("JButton.buttonType", "roundRect");
         sendButton.setBackground(UIConstants.PRIMARY_COLOR);
+        sendButton.setForeground(Color.WHITE);
         sendButton.addActionListener(e -> {
             String msg = msgField.getText();
             if (!msg.isEmpty()) {
