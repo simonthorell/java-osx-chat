@@ -1,5 +1,8 @@
 package client.java.ui;
 
+import client.java.IChatClient;
+import client.java.UDPMulticastClient;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -11,6 +14,8 @@ import java.net.URL;
 public class LoginWindow extends JPanel {
     private JTextField usernameField;
     private JTextField passwordField;
+    private JRadioButton tcpButton;
+    private JRadioButton udpButton;
 
     public LoginWindow() {
         this.setLayout(new BorderLayout());
@@ -21,7 +26,7 @@ public class LoginWindow extends JPanel {
 
         top.setBorder(BorderFactory.createEmptyBorder(60, 0, 10, 0));
         center.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        bottom.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
+        bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
 
         // Add components to LoginWindow
         this.add(top, BorderLayout.NORTH);
@@ -29,7 +34,7 @@ public class LoginWindow extends JPanel {
         this.add(bottom, BorderLayout.SOUTH);
 
         // Set preferred size
-        this.setPreferredSize(new Dimension(280, 400));
+        this.setPreferredSize(new Dimension(280, 420));
 
         // Component listener to focus on username field
         this.addComponentListener(new ComponentAdapter() {
@@ -89,8 +94,28 @@ public class LoginWindow extends JPanel {
     }
 
     private JPanel buttonPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel.add(loginBtn());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        // Add protocol selection
+        JPanel protocolPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        tcpButton = new JRadioButton("TCP");
+        udpButton = new JRadioButton("UDP");
+        ButtonGroup group = new ButtonGroup();
+        group.add(tcpButton);
+        group.add(udpButton);
+        protocolPanel.add(tcpButton);
+        protocolPanel.add(udpButton);
+        panel.add(protocolPanel);
+
+        // Add spacing
+        panel.add(Box.createVerticalStrut(10));
+
+        // Add Login Button
+        JButton loginButton = loginBtn();
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(loginButton);
+
         return panel;
     }
 
@@ -119,18 +144,51 @@ public class LoginWindow extends JPanel {
         loginBtn.setBackground(UIConstants.PRIMARY_COLOR);
         loginBtn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         loginBtn.setForeground(Color.WHITE);
+
         // Button action listener
+//        loginBtn.addActionListener(e -> {
+//            String username = usernameField.getText().trim();
+//            String password = passwordField.getText().trim(); // Assuming password handling
+//            if (!username.isEmpty() && !password.isEmpty()) {
+//                MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
+//                mainWindow.setUsername(username);  // Assuming setting username
+//                mainWindow.switchPanel("ChatWindow");
+//            } else {
+//                JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+//            }
+//        });
+
         loginBtn.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim(); // Assuming password handling
-            if (!username.isEmpty() && !password.isEmpty()) {
-                MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
-                mainWindow.setUsername(username);  // Assuming setting username
-                mainWindow.switchPanel("ChatWindow");
-            } else {
+
+            if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            if (!tcpButton.isSelected() && !udpButton.isSelected()) {
+                JOptionPane.showMessageDialog(this, "Please select a protocol", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // TODO: Change to TCP/UDP Options
+            IChatClient client = new UDPMulticastClient();;
+//            if (tcpButton.isSelected()) {
+//                client = new TCPClient();
+//            } else {
+//                client = new UDPMulticastClient();
+//            }
+
+            MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
+            mainWindow.switchToChatWindow(client);
         });
+
         return loginBtn;
+    }
+
+    // Getters
+    public String getUsername() {
+        return usernameField.getText();
     }
 }

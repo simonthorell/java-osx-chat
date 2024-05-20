@@ -1,4 +1,7 @@
 package client.java.ui;
+import client.java.IMessageHandler;
+import client.java.ChatMessage;
+import client.java.IChatClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,14 +9,21 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-public class ChatWindow extends JPanel {
+public class ChatWindow extends JPanel implements IMessageHandler {
     private final JTextArea msgArea = new JTextArea(10, 45);
     private final JTextField msgField = new JTextField(30);
     private String username;
+    private final IChatClient client;
 
-    public ChatWindow() {
+    public ChatWindow(IChatClient client) {
+        this.client = client;
+        client.setMessageHandler(this);
+
         // Set layout for ChatWindow
         this.setLayout(new BorderLayout());
 
@@ -42,6 +52,14 @@ public class ChatWindow extends JPanel {
                 msgField.requestFocusInWindow();
             }
         });
+
+        // Connect to the chat server
+        try {
+            client.connect();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Unable to connect to the chat server", "Connection Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     //====================================================================================================
@@ -142,10 +160,24 @@ public class ChatWindow extends JPanel {
         sendButton.putClientProperty("JButton.buttonType", "roundRect");
         sendButton.setBackground(UIConstants.PRIMARY_COLOR);
         sendButton.setForeground(Color.WHITE);
+//        sendButton.addActionListener(e -> {
+//            String msg = msgField.getText();
+//            if (!msg.isEmpty()) {
+//                msgArea.append(username + ": " + msg + "\n");
+//                msgField.setText("");
+//            }
+//        });
         sendButton.addActionListener(e -> {
             String msg = msgField.getText();
             if (!msg.isEmpty()) {
-                msgArea.append(username + ": " + msg + "\n");
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                ChatMessage chatMessage = new ChatMessage(username, msg, timestamp);
+                try {
+                    client.sendMessage(chatMessage);
+                } catch (IOException ioException) {
+                    JOptionPane.showMessageDialog(this, "Unable to send message", "Message Error", JOptionPane.ERROR_MESSAGE);
+                    ioException.printStackTrace();
+                }
                 msgField.setText("");
             }
         });
@@ -211,5 +243,13 @@ public class ChatWindow extends JPanel {
     //====================================================================================================
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    //====================================================================================================
+    // IMessageHandler IMPLEMENTATION
+    //====================================================================================================
+    @Override
+    public void handleMessage(ChatMessage message) {
+        msgArea.append(message.getUser() + ": " + message.getMessage() + "\n");
     }
 }

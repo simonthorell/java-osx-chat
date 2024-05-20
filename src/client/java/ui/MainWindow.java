@@ -1,5 +1,8 @@
 package client.java.ui;
 
+import client.java.IChatClient;
+import client.java.UDPMulticastClient;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,7 +11,7 @@ import java.awt.event.ActionListener;
 public class MainWindow extends JFrame implements ActionListener {
     private final JPanel mainPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    private final ChatWindow chatWindow = new ChatWindow();
+    private ChatWindow chatWindow;
     private final LoginWindow loginWindow = new LoginWindow();
 
     public MainWindow() {
@@ -21,7 +24,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Add sub-panels to the main panel
         mainPanel.add(loginWindow, "LoginWindow");
-        mainPanel.add(chatWindow, "ChatWindow");
+//        mainPanel.add(chatWindow, "ChatWindow");
 
         // Create an outer panel for padding
         JPanel outerPanel = new JPanel(new BorderLayout());
@@ -46,6 +49,22 @@ public class MainWindow extends JFrame implements ActionListener {
     //====================================================================================================
     // PUBLIC METHODS
     //====================================================================================================
+    public void switchToChatWindow(IChatClient client) {
+        // Remove the previous chatWindow if it exists
+        if (chatWindow != null) {
+            mainPanel.remove(chatWindow);
+        }
+
+        // Create a new ChatWindow with the provided client
+        chatWindow = new ChatWindow(client);
+        chatWindow.setUsername(loginWindow.getUsername());
+
+        // Add the ChatWindow to the main panel and switch to it
+        mainPanel.add(chatWindow, "ChatWindow");
+        cardLayout.show(mainPanel, "ChatWindow");
+        resizeAndCenterWindow();
+    }
+
     // Method to switch panels
     public void switchPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
