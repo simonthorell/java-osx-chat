@@ -6,6 +6,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 
 public class ChatWindow extends JPanel {
     private final JTextArea msgArea = new JTextArea(10, 45);
@@ -16,13 +17,15 @@ public class ChatWindow extends JPanel {
         // Set layout for ChatWindow
         this.setLayout(new BorderLayout());
 
+        // Add ChatWindow components
         JPanel top = topPanel();
         JSplitPane center = centerPanel();
         JPanel bottom = bottomPanel();
 
         // Adding padding around sub-panels
-        center.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        bottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        top.setBorder(BorderFactory.createEmptyBorder(7, 0, 7, 0));
+        // center.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        bottom.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
         // Add components to ChatWindow
         this.add(top, BorderLayout.NORTH);
@@ -45,19 +48,41 @@ public class ChatWindow extends JPanel {
     // MAIN CHAT WINDOW PANELS
     //====================================================================================================
     private JPanel topPanel() {
-        // Configure switch button
-        JButton switchButton = new JButton("Sign Out");
-        switchButton.setActionCommand("button");
-        switchButton.addActionListener(e -> {
+        JPanel northPanel = new JPanel(new BorderLayout());
+
+        JButton signOutButton = new JButton();
+
+        // Load the icon and resize it
+        URL imageUrl = getClass().getClassLoader().getResource("logout.png");
+        if (imageUrl != null) {
+            ImageIcon icon = new ImageIcon(imageUrl);
+            Image image = icon.getImage();
+            Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            icon = new ImageIcon(newimg);
+            signOutButton.setIcon(icon);
+        } else {
+            System.err.println("Resource not found: logout.png");
+        }
+
+        signOutButton.setContentAreaFilled(false);
+        signOutButton.setBorderPainted(false);
+        signOutButton.setFocusPainted(false);
+        signOutButton.setBorder(null);
+
+        signOutButton.addActionListener(e -> {
             MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
             mainWindow.switchPanel("LoginWindow");
-            // Make sure the window is re-painted correctly
             mainWindow.resizeAndCenterWindow();
         });
 
-        // Create a panel to hold the switch button
-        JPanel northPanel = new JPanel(new BorderLayout());
-        northPanel.add(switchButton, BorderLayout.EAST);
+        // App name label
+        JLabel appNameLabel = new JLabel("ChatUp", SwingConstants.CENTER);
+        appNameLabel.setForeground(Color.WHITE);
+        appNameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Larger and bold font
+
+        // Set alignment and add components
+        northPanel.add(appNameLabel, BorderLayout.CENTER);
+        northPanel.add(signOutButton, BorderLayout.EAST);
 
         return northPanel;
     }
@@ -83,7 +108,7 @@ public class ChatWindow extends JPanel {
 
         // Split pane for message and user lists
         JSplitPane centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, msgPanel, usersPanel);
-        centerSplitPane.setResizeWeight(0.7);
+        centerSplitPane.setResizeWeight(0.9);
 
         return centerSplitPane;
     }
@@ -139,6 +164,9 @@ public class ChatWindow extends JPanel {
         usersList.setFixedCellWidth(maxWidth);
     }
 
+    //====================================================================================================
+    // GETTERS & SETTERS
+    //====================================================================================================
     public void setUsername(String username) {
         this.username = username;
     }

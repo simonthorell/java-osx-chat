@@ -25,7 +25,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Create an outer panel for padding
         JPanel outerPanel = new JPanel(new BorderLayout());
-        outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
         outerPanel.add(mainPanel, BorderLayout.CENTER);
         this.add(outerPanel);
 

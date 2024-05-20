@@ -19,9 +19,8 @@ public class Main {
         // Set the application name for macOS menu bar & dock
         setupMacOS();
 
+        // Setup FlatLaf theme & Swing components
         FlatOneDarkIJTheme.setup();
-        java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-
         SwingUtilities.invokeLater(() -> {
             mainWindow = new MainWindow();
             frame = mainWindow.getFrame();
@@ -41,11 +40,12 @@ public class Main {
     public void setupMacOS() {
         // Set the application name for macOS menu bar
         System.setProperty("apple.awt.application.name", "ChatUp");
+        // Replace the macOS menu bar with app menu bar
         System.setProperty( "apple.laf.useScreenMenuBar", "true" );
     }
 
     public void setPropsMacOS() {
-        // Hide the system menu bar for macOS
+        // Hide the app menu bar defaulted in macOS
         if (SystemInfo.isMacFullWindowContentSupported) {
             frame.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
             frame.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);

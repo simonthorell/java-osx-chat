@@ -17,9 +17,9 @@ public class LoginWindow extends JPanel {
 
         JPanel top = appLogoPanel();
         JPanel center = inputFieldsPanel();
-        JPanel bottom = bottomPanel();
+        JPanel bottom = buttonPanel();
 
-        top.setBorder(BorderFactory.createEmptyBorder(60, 0, 5, 0));
+        top.setBorder(BorderFactory.createEmptyBorder(60, 0, 10, 0));
         center.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         bottom.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
 
@@ -40,19 +40,31 @@ public class LoginWindow extends JPanel {
         });
     }
 
+    //====================================================================================================
+    // PRIVATE PANELS
+    //====================================================================================================
     private JPanel inputFieldsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 1, 10, 5));
 
+        // Add username field
         panel.add(new JLabel("Username:"));
         usernameField = new JTextField(15);
         panel.add(usernameField);
-
+        // Add password field
         panel.add(new JLabel("Password:"));
         passwordField = new JTextField(15);
         panel.add(passwordField);
 
         // Listeners for pressing Enter key
+        usernameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    loginBtn().doClick();
+                }
+            }
+        });
         passwordField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -76,15 +88,19 @@ public class LoginWindow extends JPanel {
         return panel;
     }
 
-    private JPanel bottomPanel() {
+    private JPanel buttonPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panel.add(loginBtn());
         return panel;
     }
 
+    //====================================================================================================
+    // HELPER METHODS
+    //====================================================================================================
     private JLabel appLogo() {
         ImageIcon imageIcon = null;
         URL imageURL = getClass().getClassLoader().getResource("icon.png");
+        // Try to load the image
         if (imageURL != null) {
             imageIcon = new ImageIcon(imageURL);
             Image image = imageIcon.getImage();
@@ -97,12 +113,14 @@ public class LoginWindow extends JPanel {
     }
 
     private JButton loginBtn() {
-        JButton switchButton = new JButton("Login to Chat");
-        switchButton.putClientProperty("JButton.buttonType", "roundRect");
-        switchButton.setBackground(UIConstants.PRIMARY_COLOR);
-        switchButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        switchButton.setForeground(Color.WHITE);
-        switchButton.addActionListener(e -> {
+        // Setup Login button
+        JButton loginBtn = new JButton("Login to Chat");
+        loginBtn.putClientProperty("JButton.buttonType", "roundRect");
+        loginBtn.setBackground(UIConstants.PRIMARY_COLOR);
+        loginBtn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        loginBtn.setForeground(Color.WHITE);
+        // Button action listener
+        loginBtn.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim(); // Assuming password handling
             if (!username.isEmpty() && !password.isEmpty()) {
@@ -113,6 +131,6 @@ public class LoginWindow extends JPanel {
                 JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        return switchButton;
+        return loginBtn;
     }
 }
