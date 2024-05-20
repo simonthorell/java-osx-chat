@@ -48,41 +48,59 @@ public class ChatWindow extends JPanel {
     // MAIN CHAT WINDOW PANELS
     //====================================================================================================
     private JPanel topPanel() {
+        // Create a panel for the top section with BorderLayout
         JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.setOpaque(false);
 
-        JButton signOutButton = new JButton();
+        // Create a sub-panel for buttons with FlowLayout for horizontal alignment
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        // Load the icon and resize it
-        URL imageUrl = getClass().getClassLoader().getResource("logout.png");
-        if (imageUrl != null) {
-            ImageIcon icon = new ImageIcon(imageUrl);
-            Image image = icon.getImage();
-            Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-            icon = new ImageIcon(newimg);
-            signOutButton.setIcon(icon);
-        } else {
-            System.err.println("Resource not found: logout.png");
-        }
+        // Add Action buttons
+        JButton addBotBtn = createActionButton("add_bot.png");
+        JButton rmBotBtn = createActionButton("remove_bot.png");
+        JButton signOutButton = createActionButton("logout.png");
 
-        signOutButton.setContentAreaFilled(false);
-        signOutButton.setBorderPainted(false);
-        signOutButton.setFocusPainted(false);
-        signOutButton.setBorder(null);
-
+        // Add action listeners to buttons
+        addBotBtn.addActionListener(e -> {
+            // TODO: Add AI bot action
+        });
+        rmBotBtn.addActionListener(e -> {
+            // TODO: Remove AI bot action
+        });
         signOutButton.addActionListener(e -> {
+            // TODO: Add logout dialog to ask for confirmation
             MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
             mainWindow.switchPanel("LoginWindow");
             mainWindow.resizeAndCenterWindow();
         });
 
+        // Add buttons to the button panel
+        buttonPanel.add(addBotBtn);
+        buttonPanel.add(Box.createHorizontalStrut(5));
+        buttonPanel.add(rmBotBtn);
+        buttonPanel.add(Box.createHorizontalStrut(5));
+        buttonPanel.add(signOutButton);
+
         // App name label
-        JLabel appNameLabel = new JLabel("ChatUp", SwingConstants.CENTER);
+        JLabel appNameLabel = new JLabel("ChatUp");
         appNameLabel.setForeground(Color.WHITE);
         appNameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Larger and bold font
 
         // Set alignment and add components
         northPanel.add(appNameLabel, BorderLayout.CENTER);
-        northPanel.add(signOutButton, BorderLayout.EAST);
+        northPanel.add(buttonPanel, BorderLayout.EAST);
+
+//         Adjust label position on resize
+        northPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int panelWidth = northPanel.getWidth();
+                int labelWidth = appNameLabel.getPreferredSize().width;
+                int newLabelPosX = (panelWidth - labelWidth) / 2; // Calculate the new X position for the label
+
+                appNameLabel.setBounds(newLabelPosX, appNameLabel.getY(), labelWidth, appNameLabel.getHeight());
+            }
+        });
 
         return northPanel;
     }
@@ -98,7 +116,7 @@ public class ChatWindow extends JPanel {
 
         // Setup user list panel
         JPanel usersPanel = new JPanel(new BorderLayout());
-        JList<String> usersList = new JList<>(new String[]{"User 1", "User 2", "User 3"});
+        JList<String> usersList = new JList<>(new String[]{"Kexet", "Janne", "LasseMedBenet"});
         JScrollPane userScrollPane = new JScrollPane(usersList);
         usersPanel.add(userScrollPane, BorderLayout.CENTER);
         setFixedCellWidth(usersList);
@@ -108,7 +126,7 @@ public class ChatWindow extends JPanel {
 
         // Split pane for message and user lists
         JSplitPane centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, msgPanel, usersPanel);
-        centerSplitPane.setResizeWeight(0.9);
+        centerSplitPane.setResizeWeight(1);
 
         return centerSplitPane;
     }
@@ -160,8 +178,32 @@ public class ChatWindow extends JPanel {
             }
         }
         // Add some padding to the width
-        maxWidth += 40; // Adjust padding as needed
-        usersList.setFixedCellWidth(maxWidth);
+//        maxWidth += 0; // Adjust padding as needed
+//        usersList.setFixedCellWidth(maxWidth);
+    }
+
+    private JButton createActionButton(String iconPath) {
+        JButton btn = new JButton();
+
+        // Load the icon and resize it
+        URL imageUrl = getClass().getClassLoader().getResource(iconPath);
+        if (imageUrl != null) {
+            ImageIcon icon = new ImageIcon(imageUrl);
+            Image image = icon.getImage();
+            Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            icon = new ImageIcon(newimg);
+            btn.setIcon(icon);
+        } else {
+            System.err.println("Resource not found: " + iconPath);
+        }
+
+        // Set button properties to only show the icon
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setBorder(null);
+
+        return btn;
     }
 
     //====================================================================================================
