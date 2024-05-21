@@ -11,8 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class ChatWindow extends JPanel implements IMessageHandler {
     private final JTextArea msgArea = new JTextArea(10, 45);
@@ -86,7 +84,14 @@ public class ChatWindow extends JPanel implements IMessageHandler {
             // TODO: Remove AI bot action
         });
         signOutButton.addActionListener(e -> {
-            // TODO: Add logout dialog to ask for confirmation
+            // Disconnect from the chat server
+            try {
+                client.disconnect();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+            // Switch back to the login window
             MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
             mainWindow.switchPanel("LoginWindow");
             mainWindow.resizeAndCenterWindow();
@@ -160,18 +165,11 @@ public class ChatWindow extends JPanel implements IMessageHandler {
         sendButton.putClientProperty("JButton.buttonType", "roundRect");
         sendButton.setBackground(UIConstants.PRIMARY_COLOR);
         sendButton.setForeground(Color.WHITE);
-//        sendButton.addActionListener(e -> {
-//            String msg = msgField.getText();
-//            if (!msg.isEmpty()) {
-//                msgArea.append(username + ": " + msg + "\n");
-//                msgField.setText("");
-//            }
-//        });
+
         sendButton.addActionListener(e -> {
             String msg = msgField.getText();
             if (!msg.isEmpty()) {
-                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                ChatMessage chatMessage = new ChatMessage(username, msg, timestamp);
+                ChatMessage chatMessage = new ChatMessage(username, msg);
                 try {
                     client.sendMessage(chatMessage);
                 } catch (IOException ioException) {
@@ -209,9 +207,6 @@ public class ChatWindow extends JPanel implements IMessageHandler {
                 maxWidth = width;
             }
         }
-        // Add some padding to the width
-//        maxWidth += 0; // Adjust padding as needed
-//        usersList.setFixedCellWidth(maxWidth);
     }
 
     private JButton createActionButton(String iconPath) {
@@ -246,10 +241,10 @@ public class ChatWindow extends JPanel implements IMessageHandler {
     }
 
     //====================================================================================================
-    // IMessageHandler IMPLEMENTATION
+    // Helper methods
     //====================================================================================================
     @Override
     public void handleMessage(ChatMessage message) {
-        msgArea.append(message.getUser() + ": " + message.getMessage() + "\n");
+        msgArea.append(message.getUser() + ": " + message.getMessage() + " (" + message.getTimestamp() + ")\n");
     }
 }

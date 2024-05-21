@@ -104,6 +104,9 @@ public class LoginWindow extends JPanel {
         ButtonGroup group = new ButtonGroup();
         group.add(tcpButton);
         group.add(udpButton);
+        // Set UDP as the default selected protocol
+        udpButton.setSelected(true);
+        // Add the buttons to the protocol panel
         protocolPanel.add(tcpButton);
         protocolPanel.add(udpButton);
         panel.add(protocolPanel);
@@ -173,7 +176,7 @@ public class LoginWindow extends JPanel {
             }
 
             // TODO: Change to TCP/UDP Options
-            IChatClient client = new UDPMulticastClient();;
+            IChatClient client = new UDPMulticastClient(getUsername());;
 //            if (tcpButton.isSelected()) {
 //                client = new TCPClient();
 //            } else {
