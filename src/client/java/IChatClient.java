@@ -10,7 +10,7 @@ public interface IChatClient {
     void setMessageHandler(IMessageHandler handler);
 
     // New methods to manage users
-    List<String> getUsers(); // Get the list of user names
+    String[] getUsers(); // Get the list of user names
     void addUser(String username); // Add a user when they connect
     void removeUser(String username); // Remove a user when they disconnect
 }

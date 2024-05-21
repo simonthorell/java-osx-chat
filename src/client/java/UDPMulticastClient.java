@@ -20,6 +20,8 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     private IMessageHandler handler;
     private volatile boolean running = true;
     private final String username;
+    private final String requestUsersMsg = "username_request";
+    private final String responseUsersMsg = "user_response";
     private List<String> users = new ArrayList<>();
 
     //====================================================================================================
@@ -39,8 +41,8 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         socket.joinGroup(group);
         new Thread(this).start();
 
-        // Broadcast a request for current user list
-//        sendMessage(new ChatMessage(username, "request_user_list"));
+        // Broadcast a request for active users
+        sendMessage(new ChatMessage(username, requestUsersMsg));
 
         // Notify other clients that this user has entered the chat room
         sendMessage(new ChatMessage(username, "has joined the chat room!"));
@@ -75,9 +77,15 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         this.handler = handler;
     }
 
+//    @Override
+//    public List<String> getUsers() {
+//        return users;
+//    }
+
     @Override
-    public List<String> getUsers() {
-        return users;
+    public String[] getUsers() {
+        System.out.println("Getting users: " + users);
+        return users.toArray(new String[0]); // Convert List to String array
     }
 
     //====================================================================================================
@@ -107,9 +115,22 @@ public class UDPMulticastClient implements IChatClient, Runnable {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
                 ChatMessage message = deserialize(packet.getData());
-                if (handler != null) {
+
+                // TODO: Add logic to handle new connection and disconnection messages
+
+                if (message.getMessage().equals(requestUsersMsg)) {
+                    // Respond with the current user's username to the group
+                    sendMessage(new ChatMessage(username, "user_response"));
+                } else if (message.getMessage().equals(responseUsersMsg)) {
+                    // Add the user to the list of active users
+                    addUser(message.getUser());
+                } else if (handler != null) {
                     handler.handleMessage(message);
                 }
+
+//                if (handler != null) {
+//                    handler.handleMessage(message);
+//                }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

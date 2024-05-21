@@ -139,7 +139,8 @@ public class ChatWindow extends JPanel implements IMessageHandler {
 
         // Setup user list panel
         JPanel usersPanel = new JPanel(new BorderLayout());
-        JList<String> usersList = new JList<>(new String[]{"Kexet", "Janne", "LasseMedBenet"});
+//        JList<String> usersList = new JList<>(new String[]{"Kexet", "Janne", "LasseMedBenet"});
+        JList<String> usersList = new JList<>(client.getUsers());
         JScrollPane userScrollPane = new JScrollPane(usersList);
         usersPanel.add(userScrollPane, BorderLayout.CENTER);
         setFixedCellWidth(usersList);

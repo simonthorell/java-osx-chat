@@ -10,7 +10,7 @@ public class ChatMessage implements Serializable {
     private final String message;
     private final String timestamp;  // Change to String
 
-    // Constructor for messages without user list
+    // Constructor for chat messages
     public ChatMessage(String user, String message) {
         this.user = user;
         this.message = message;
