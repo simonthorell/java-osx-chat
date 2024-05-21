@@ -1,4 +1,4 @@
-package client.java;
+package client.java.net;
 
 public class Constants {
     public static final String MULTICAST_GROUP_IP = "224.0.0.1";

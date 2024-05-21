@@ -1,7 +1,7 @@
 package client.java.ui;
 
 import client.java.IChatClient;
-import client.java.UDPMulticastClient;
+import client.java.net.UDPMulticastClient;
 
 import javax.swing.*;
 import java.awt.*;

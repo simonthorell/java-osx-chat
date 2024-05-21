@@ -1,6 +1,6 @@
-package client.java;
+package client.java.net;
 
-import client.java.ui.ChatWindow;
+import client.java.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +19,8 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     private IMessageHandler handler;
     private volatile boolean running = true;
     private final String username;
-    private List<String> users = new ArrayList<>();
-    private List<UserListObserver> observers = new ArrayList<>();
+    private final List<String> users = new ArrayList<>();
+    private final List<IUserListObserver> observers = new ArrayList<>();
 
     //====================================================================================================
     // Constructors
@@ -31,7 +30,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     }
 
     //====================================================================================================
-    // IChatClient Methods
+    // Public Methods (IChatClient Interface)
     //====================================================================================================
     @Override
     public void connect() throws IOException {
@@ -41,7 +40,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         new Thread(this).start();
 
         // Broadcast a request for active users usernames
-        sendMessage(new ChatMessage(username, MessageType.USERNAME_REQUEST));
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USERNAME_REQUEST));
 
         // Notify other clients that this user has entered the chat room
         sendMessage(new ChatMessage(username, "has joined the chat room!"));
@@ -56,10 +55,10 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     }
 
     @Override
-    public void disconnect(UserListObserver observer) throws IOException {
+    public void disconnect(IUserListObserver observer) throws IOException {
         // Notify other clients that this user has left the chat room
         sendMessage(new ChatMessage(username, "has left the chat room!"));
-        sendMessage(new ChatMessage(username, MessageType.USER_DISCONNECT));
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_DISCONNECT));
         removeUser(username);
 
         // Wait for the thread to finish
@@ -75,22 +74,13 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         }
     }
 
-    //====================================================================================================
-    // Getters & Setters
-    //====================================================================================================
     @Override
     public void setMessageHandler(IMessageHandler handler) {
         this.handler = handler;
     }
 
-    @Override
-    public String[] getUsers() {
-        System.out.println("Getting users: " + users);
-        return users.toArray(new String[0]); // Convert List to String array
-    }
-
     //====================================================================================================
-    // User Management
+    // User Management (IChatClient Interface)
     //====================================================================================================
     @Override
     public void addUser(String username) {
@@ -107,25 +97,24 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         notifyUserListChanged();
     }
 
-    //====================================================================================================
-    // Observer Methods (UserListObserver for UI)
-    //====================================================================================================
+    @Override
+    public void addUserListObserver(IUserListObserver observer) {
+        observers.add(observer);
+    }
+    @Override
+    public void removeUserListObserver(IUserListObserver observer) {
+        observers.remove(observer);
+    }
+
+    // Helper method to notify observers of changes to the user list
     private void notifyUserListChanged() {
-        for (UserListObserver observer : observers) {
+        for (IUserListObserver observer : observers) {
             observer.userListUpdated(new ArrayList<>(users));
         }
     }
 
-    public void addUserListObserver(UserListObserver observer) {
-        observers.add(observer);
-    }
-
-    public void removeUserListObserver(UserListObserver observer) {
-        observers.remove(observer);
-    }
-
     //====================================================================================================
-    // Thread Methods
+    // Thread Methods (Runnable Interface)
     //====================================================================================================
     @Override
     public void run() {
@@ -139,7 +128,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
                 switch (message.getMessageType()) {
                     case USERNAME_REQUEST:
                         // Respond with the current user's username to the group
-                        sendMessage(new ChatMessage(username, MessageType.USER_RESPONSE));
+                        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_RESPONSE));
                         break;
                     case USER_RESPONSE:
                         // Add the user to the list of active users
@@ -162,6 +151,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         }
     }
 
+    // Helper method to serialize and deserialize ChatMessage objects
     private byte[] serialize(ChatMessage message) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
@@ -170,6 +160,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         }
     }
 
+    // Helper method to serialize and deserialize ChatMessage objects
     private ChatMessage deserialize(byte[] data) throws IOException, ClassNotFoundException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
              ObjectInputStream ois = new ObjectInputStream(bis)) {

@@ -3,13 +3,15 @@ package client.java;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ChatMessage implements Serializable {
+    public enum MessageType {
+        USERNAME_REQUEST, USER_RESPONSE, USER_DISCONNECT, CHAT_MESSAGE
+    }
     private final String user;
     private final String message;
     private final MessageType msgType;
-    private final String timestamp;  // Change to String
+    private final String timestamp;
 
     // Constructor for chat messages
     public ChatMessage(String user, String message) {

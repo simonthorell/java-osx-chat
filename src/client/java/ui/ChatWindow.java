@@ -1,6 +1,6 @@
 package client.java.ui;
 import client.java.IMessageHandler;
-import client.java.UserListObserver;
+import client.java.IUserListObserver;
 import client.java.ChatMessage;
 import client.java.IChatClient;
 
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class ChatWindow extends JPanel implements IMessageHandler, UserListObserver {
+public class ChatWindow extends JPanel implements IMessageHandler, IUserListObserver {
     public final IChatClient client;
     private final JTextArea msgArea = new JTextArea(10, 45);
     private final JTextField msgField = new JTextField(30);
