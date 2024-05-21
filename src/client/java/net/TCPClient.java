@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TCPClient implements IChatClient, Runnable{
+public class TCPClient implements IChatClient, Runnable {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -110,3 +110,4 @@ public class TCPClient implements IChatClient, Runnable{
             }
         }
     }
+}
