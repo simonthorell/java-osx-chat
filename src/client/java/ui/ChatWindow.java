@@ -101,7 +101,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
             // Switch back to the login window
             MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
             mainWindow.switchPanel("LoginWindow");
-            mainWindow.resizeAndCenterWindow();
+            mainWindow.resizeWindow();
         });
 
         // Add buttons to the button panel

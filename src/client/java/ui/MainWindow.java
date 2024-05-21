@@ -1,7 +1,6 @@
 package client.java.ui;
 
 import client.java.IChatClient;
-import client.java.UDPMulticastClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +33,14 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Show login window by default & resize window to fit
         cardLayout.show(mainPanel, "LoginWindow");
-        resizeAndCenterWindow();
+        resizeWindow();
+
+        // Center the window on the screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - this.getWidth()) / 2;
+        int y = (screenSize.height - this.getHeight()) / 2;
+        this.setLocation(x, y);
+
         this.setVisible(true);
     }
 
@@ -62,13 +68,13 @@ public class MainWindow extends JFrame implements ActionListener {
         // Add the ChatWindow to the main panel and switch to it
         mainPanel.add(chatWindow, "ChatWindow");
         cardLayout.show(mainPanel, "ChatWindow");
-        resizeAndCenterWindow();
+        resizeWindow();
     }
 
     // Method to switch panels
     public void switchPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
-        resizeAndCenterWindow();
+        resizeWindow();
     }
 
     public void setUsername(String username) {
@@ -76,7 +82,7 @@ public class MainWindow extends JFrame implements ActionListener {
     }
 
     // Method to resize and center the window when switching cards
-    public void resizeAndCenterWindow() {
+    public void resizeWindow() {
         // Resize window based on the preferred size of the current panel
         Component currentPanel = getCurrentPanel();
         if (currentPanel != null) {
@@ -86,18 +92,8 @@ public class MainWindow extends JFrame implements ActionListener {
         }
 
         // Set resizable window based on the current panel
-        if (currentPanel instanceof LoginWindow) {
-            this.setResizable(false);
-        } else {
-            // All other windows can be resized
-            this.setResizable(true);
-        }
-
-        // Center the window on the screen
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - this.getWidth()) / 2;
-        int y = (screenSize.height - this.getHeight()) / 2;
-        this.setLocation(x, y);
+        // All other windows can be resized
+        this.setResizable(!(currentPanel instanceof LoginWindow));
     }
 
     // Method to get the MainWindow JFrame object (used in main method)
