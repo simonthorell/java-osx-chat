@@ -7,6 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+
 public class MainWindow extends JFrame implements ActionListener {
     private final JPanel mainPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
@@ -16,7 +20,8 @@ public class MainWindow extends JFrame implements ActionListener {
     public MainWindow() {
         // Set Window title
         this.setTitle("ChatUp");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         // Set the layout manager & add panels to it
         mainPanel.setLayout(cardLayout);
@@ -40,6 +45,21 @@ public class MainWindow extends JFrame implements ActionListener {
         int x = (screenSize.width - this.getWidth()) / 2;
         int y = (screenSize.height - this.getHeight()) / 2;
         this.setLocation(x, y);
+
+        // Add a window listener using an anonymous inner class
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    // Disconnect the client when the window is closing
+                    chatWindow.client.disconnect();
+                    MainWindow.this.dispose();
+                } catch (Exception ex) {
+                    // Connection already disconnected, so just close the window
+                    MainWindow.this.dispose(); // Closes the window and releases resources
+                }
+            }
+        });
 
         this.setVisible(true);
     }

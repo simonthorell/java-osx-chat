@@ -18,7 +18,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
     private final JTextArea msgArea = new JTextArea(10, 45);
     private final JTextField msgField = new JTextField(30);
     private String username;
-    private final IChatClient client;
+    public final IChatClient client;
     private JList<String> usersList;
 
     public ChatWindow(IChatClient client) {

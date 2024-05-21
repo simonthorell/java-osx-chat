@@ -58,7 +58,7 @@ public class LoginWindow extends JPanel {
         panel.add(usernameField);
         // Add password field
         panel.add(new JLabel("Password:"));
-        passwordField = new JTextField(15);
+        passwordField = new JPasswordField(15);
         panel.add(passwordField);
 
         // Listeners for pressing Enter key
@@ -148,30 +148,19 @@ public class LoginWindow extends JPanel {
         loginBtn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         loginBtn.setForeground(Color.WHITE);
 
-        // Button action listener
-//        loginBtn.addActionListener(e -> {
-//            String username = usernameField.getText().trim();
-//            String password = passwordField.getText().trim(); // Assuming password handling
-//            if (!username.isEmpty() && !password.isEmpty()) {
-//                MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
-//                mainWindow.setUsername(username);  // Assuming setting username
-//                mainWindow.switchPanel("ChatWindow");
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//        });
-
         loginBtn.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = passwordField.getText().trim(); // Assuming password handling
 
             if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Username and password cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (!tcpButton.isSelected() && !udpButton.isSelected()) {
-                JOptionPane.showMessageDialog(this, "Please select a protocol", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Please select a protocol", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
