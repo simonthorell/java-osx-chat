@@ -1,4 +1,4 @@
-package client.java;
+package common;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

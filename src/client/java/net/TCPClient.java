@@ -1,6 +1,6 @@
 package client.java.net;
 
-import client.java.ChatMessage;
+import common.ChatMessage;
 import client.java.IChatClient;
 
 import java.io.*;
@@ -13,6 +13,7 @@ public class TCPClient implements IChatClient, Runnable {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private IMessageHandler handler;
+    private final String username;
     private final List<String> users = new ArrayList<>();
     private final List<IUserListObserver> observers = new ArrayList<>();
 
@@ -20,7 +21,7 @@ public class TCPClient implements IChatClient, Runnable {
     // Constructors
     //====================================================================================================
     public TCPClient(String username) {
-        users.add(username);
+        this.username = username;
     }
 
     //====================================================================================================
@@ -95,6 +96,7 @@ public class TCPClient implements IChatClient, Runnable {
             while (!socket.isClosed()) {
                 ChatMessage message = (ChatMessage) in.readObject();
                 if (handler != null) {
+                    System.out.println("Received message: " + message.getMessage());
                     handler.handleMessage(message);
                 }
             }

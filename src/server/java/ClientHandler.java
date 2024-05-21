@@ -1,31 +1,36 @@
-package server.java;
+package server;
+
+import server.java.ChatServer;
+import common.ChatMessage;
 
 import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
-    private final PrintWriter out;
-    private final BufferedReader in;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final ChatServer server;
 
     public ClientHandler(Socket socket, ChatServer server) throws IOException {
         this.socket = socket;
         this.server = server;
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        in = new ObjectInputStream(socket.getInputStream());
     }
 
     @Override
     public void run() {
         try {
-            String inputLine;
-            System.out.println("Client connected");
-            sendMessage("Connected to chat server!");
-            while ((inputLine = in.readLine()) != null) {
-                server.broadcastMessage(inputLine, this);
+            ChatMessage inputMessage;
+            while ((inputMessage = (ChatMessage) in.readObject()) != null) {
+                // TODO: Log messages to DB
+                // String message = inputMessage.getMessage();
+                // String username = inputMessage.getUser();
+                server.broadcastMessage(inputMessage, this);
             }
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println("Client disconnected");
         } finally {
             closeResources();
@@ -33,18 +38,23 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    void sendMessage(String message) {
-        out.println(message);
+    public void sendMessage(ChatMessage message) {
+        System.out.println("Sent message: " + message);
+        try {
+            out.writeObject(message);
+            out.flush();
+        } catch (IOException e) {
+            System.out.println("Error sending message: " + e.getMessage());
+        }
     }
 
     private void closeResources() {
         try {
-            if (out != null) out.close();
             if (in != null) in.close();
+            if (out != null) out.close();
             if (socket != null) socket.close();
         } catch (IOException e) {
-            System.out.println("Error closing resources: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
-

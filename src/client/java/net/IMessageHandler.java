@@ -1,6 +1,6 @@
 package client.java.net;
 
-import client.java.ChatMessage;
+import common.ChatMessage;
 
 public interface IMessageHandler {
     void handleMessage(ChatMessage message);

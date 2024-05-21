@@ -2,6 +2,7 @@ package client.java;
 
 import client.java.net.IMessageHandler;
 import client.java.net.IUserListObserver;
+import common.ChatMessage;
 
 import java.io.IOException;
 

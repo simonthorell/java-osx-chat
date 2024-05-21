@@ -1,6 +1,7 @@
 package client.java.net;
 
 import client.java.*;
+import common.ChatMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,5 +1,8 @@
 package server.java;
 
+import common.ChatMessage;
+import server.ClientHandler;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.Executors;
@@ -23,6 +26,7 @@ public class ChatServer {
             System.out.println("Server started on port: " + port);
             while (true) {
                 var clientSocket = serverSocket.accept();
+                System.out.println("Client connected: " + clientSocket);
                 var clientThread = new ClientHandler(clientSocket, this);
                 clients.add(clientThread);
                 pool.execute(clientThread);
@@ -34,15 +38,17 @@ public class ChatServer {
         }
     }
 
-    void broadcastMessage(String message, ClientHandler excludeUser) {
-        for (ClientHandler aClient : clients) {
-            if (aClient != excludeUser) {
-                aClient.sendMessage(message);
-            }
+    public void broadcastMessage(ChatMessage message, ClientHandler excludeUser) {
+        for (ClientHandler ch : clients) {
+            System.out.println("Broadcast message to: " + ch);
+            ch.sendMessage(message);
+//            if (ch != excludeUser) {
+//                ch.sendMessage(message);
+//            }
         }
     }
 
-    void removeClient(ClientHandler client) {
+    public void removeClient(ClientHandler client) {
         clients.remove(client);
     }
 
