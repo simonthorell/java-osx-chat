@@ -8,11 +8,11 @@ This MacOS application is a simple chat platform that utilizes Java Swing for it
 - **Flexible Connection Options:** Supports both UDP Multicast and TCP connections to suit different networking requirements.
 - **MacOS Integration:** Optimized for performance and look on MacOS.
 
-## Login UI
-![Alt text](img/login_page.png "Login UI")
+### Login UI
+<img src="img/login_page.png" width="310" height="450">
 
-## Chat UI
-![Alt text](img/chat_page.png "Chat UI")
+### Chat UI
+<img src="img/chat_page.png" width="450" height="330">
 
 ## Installation
 To run this application, follow these steps:
