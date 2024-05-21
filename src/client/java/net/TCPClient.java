@@ -2,6 +2,7 @@ package client.java.net;
 
 import common.ChatMessage;
 import client.java.IChatClient;
+import common.Constants;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,7 +15,7 @@ public class TCPClient implements IChatClient, Runnable {
     private ObjectInputStream in;
     private IMessageHandler handler;
     private final String username;
-    private final List<String> users = new ArrayList<>();
+    private List<String> users = new ArrayList<>();
     private final List<IUserListObserver> observers = new ArrayList<>();
 
     //====================================================================================================
@@ -99,9 +100,23 @@ public class TCPClient implements IChatClient, Runnable {
         try {
             while (!socket.isClosed()) {
                 ChatMessage message = (ChatMessage) in.readObject();
-                if (handler != null) {
-                    System.out.println("Received message: " + message.getMessage());
-                    handler.handleMessage(message);
+
+                switch (message.getMessageType()) {
+                    case USER_LIST: // This will include CONNECT & DISCONNECT messages
+                        // Update the list of active users
+                        users = message.getUsers();
+                        System.out.println("Received user list: " + users);
+                        // Notify observers of the updated user list
+                        notifyUserListChanged();
+                        break;
+                    case CHAT_MESSAGE:
+                        // TODO: Remove default case...
+                    default:
+                        // Handle all other messages (assumed to be chat messages)
+                        if (handler != null) {
+                            handler.handleMessage(message);
+                        }
+                        break;
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

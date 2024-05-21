@@ -2,7 +2,6 @@ package server;
 
 import server.java.ChatServer;
 import common.ChatMessage;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -28,23 +27,30 @@ public class ClientHandler implements Runnable {
 
                 switch(inputMessage.getMessageType()) {
                     case USERNAME_REQUEST:
-                        // TODO: Return user list from server user DB.
                         System.out.println(inputMessage.getUser() + " requested user list");
+                        // This is new user, so add it to user list
+                        server.users.add(inputMessage.getUser());
+                        // Send user list to new user
+                        server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
+                                ChatMessage.MessageType.USER_LIST, server.users));
+                        // System.out.println("Sent user list: " + server.users);
                         break;
                     case USER_RESPONSE:
                         // TODO: Remove for TCP... Handle with server user DB.
-                        System.out.println(inputMessage.getUser() + " responded with their username");
                         break;
                     case USER_DISCONNECT:
-                        System.out.println(inputMessage.getUser() + " disconnected");
+                        // Remove user from user list
+                        server.users.remove(inputMessage.getUser());
                         break;
                     case CHAT_MESSAGE:
                         // Broadcast message to all clients
-                        System.out.println(inputMessage.getUser() + " sent: " + inputMessage.getMessage());
-                        server.broadcastMessage(inputMessage);
+                        System.out.println(inputMessage.getUser() + " sent: " +
+                                inputMessage.getMessage());
+                        // server.broadcastMessage(inputMessage);
                         break;
                     default:
-                        System.out.println("Received unknown message type: " + inputMessage.getMessageType());
+                        System.out.println("Received unknown message type: " +
+                                inputMessage.getMessageType());
                         break;
                 }
             }
