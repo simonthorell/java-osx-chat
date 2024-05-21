@@ -15,8 +15,8 @@ public class TCPClient implements IChatClient, Runnable {
     private ObjectInputStream in;
     private IMessageHandler handler;
     private final String username;
-    private List<String> users = new ArrayList<>();
     private final List<IUserListObserver> observers = new ArrayList<>();
+    private volatile List<String> users = new ArrayList<>();
 
     //====================================================================================================
     // Constructors
@@ -102,20 +102,21 @@ public class TCPClient implements IChatClient, Runnable {
                 ChatMessage message = (ChatMessage) in.readObject();
 
                 switch (message.getMessageType()) {
-                    case USER_LIST: // This will include CONNECT & DISCONNECT messages
+                    // This will include Connect & Disconnect messages
+                    case USER_LIST:
                         // Update the list of active users
                         users = message.getUsers();
-                        System.out.println("Received user list: " + users);
                         // Notify observers of the updated user list
                         notifyUserListChanged();
                         break;
+                    // This will include all Chat messages
                     case CHAT_MESSAGE:
                         // TODO: Remove default case...
-                    default:
-                        // Handle all other messages (assumed to be chat messages)
                         if (handler != null) {
                             handler.handleMessage(message);
                         }
+                    default:
+                        // Catch all other message types...
                         break;
                 }
             }

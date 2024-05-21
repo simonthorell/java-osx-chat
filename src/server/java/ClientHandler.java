@@ -30,10 +30,9 @@ public class ClientHandler implements Runnable {
                         System.out.println(inputMessage.getUser() + " requested user list");
                         // This is new user, so add it to user list
                         server.users.add(inputMessage.getUser());
-                        // Send user list to new user
+                        System.out.println(server.users);
                         server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
                                 ChatMessage.MessageType.USER_LIST, server.users));
-                        // System.out.println("Sent user list: " + server.users);
                         break;
                     case USER_RESPONSE:
                         // TODO: Remove for TCP... Handle with server user DB.
@@ -46,7 +45,7 @@ public class ClientHandler implements Runnable {
                         // Broadcast message to all clients
                         System.out.println(inputMessage.getUser() + " sent: " +
                                 inputMessage.getMessage());
-                        // server.broadcastMessage(inputMessage);
+                        server.broadcastMessage(inputMessage);
                         break;
                     default:
                         System.out.println("Received unknown message type: " +

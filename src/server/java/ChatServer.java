@@ -15,7 +15,8 @@ public class ChatServer {
     private ServerSocket serverSocket;
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private final List<ClientHandler> clients = new ArrayList<>();
-    public List<String> users = new ArrayList<>();
+    // How can this be made thread-safe???
+    public volatile List<String> users = new ArrayList<>();
 
     public ChatServer(int port) {
         this.port = port;
@@ -43,6 +44,7 @@ public class ChatServer {
         for (ClientHandler ch : clients) {
             System.out.println("Broadcast message to: " + ch);
             ch.sendMessage(message);
+            System.out.println(message.getUsers());
         }
     }
 
