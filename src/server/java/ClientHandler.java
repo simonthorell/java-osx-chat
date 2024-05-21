@@ -20,6 +20,8 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             String inputLine;
+            System.out.println("Client connected");
+            sendMessage("Connected to chat server!");
             while ((inputLine = in.readLine()) != null) {
                 server.broadcastMessage(inputLine, this);
             }

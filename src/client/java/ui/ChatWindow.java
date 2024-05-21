@@ -60,9 +60,10 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
         try {
             client.connect();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Unable to connect to the chat server",
+            JOptionPane.showMessageDialog(this,
+                    "ChatWindow (Line63): Unable to connect to the chat server",
                     "Connection Error", JOptionPane.ERROR_MESSAGE);
-            // e.printStackTrace();
+             e.printStackTrace();
         }
     }
 
