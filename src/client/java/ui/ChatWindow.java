@@ -120,7 +120,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
         northPanel.add(appNameLabel, BorderLayout.CENTER);
         northPanel.add(buttonPanel, BorderLayout.EAST);
 
-//         Adjust label position on resize
+        // Adjust label position on resize
         northPanel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -149,10 +149,10 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
         usersList = new JList<>(new DefaultListModel<>());
         JScrollPane userScrollPane = new JScrollPane(usersList);
         usersPanel.add(userScrollPane, BorderLayout.CENTER);
-        setFixedCellWidth(usersList);
+
         // Set minimum size for users panel based on the longest username
-        Dimension minSize = usersPanel.getPreferredSize();
-        usersPanel.setMinimumSize(new Dimension(minSize.width, minSize.height));
+        // Dimension minSize = usersPanel.getPreferredSize();
+        usersPanel.setMinimumSize(new Dimension(120, 1));
 
         // Split pane for message and user lists
         JSplitPane centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, msgPanel, usersPanel);
@@ -203,20 +203,8 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
     }
 
     //====================================================================================================
-    // HELPER METHODS
+    // Action Methods
     //====================================================================================================
-    private void setFixedCellWidth(JList<String> usersList) {
-        FontMetrics metrics = usersList.getFontMetrics(usersList.getFont());
-        int maxWidth = 0;
-        for (int i = 0; i < usersList.getModel().getSize(); i++) {
-            String element = usersList.getModel().getElementAt(i);
-            int width = metrics.stringWidth(element);
-            if (width > maxWidth) {
-                maxWidth = width;
-            }
-        }
-    }
-
     private JButton createActionButton(String iconPath) {
         JButton btn = new JButton();
 
@@ -242,13 +230,6 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
     }
 
     //====================================================================================================
-    // GETTERS & SETTERS
-    //====================================================================================================
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    //====================================================================================================
     // Helper methods
     //====================================================================================================
     @Override
@@ -256,7 +237,6 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
         msgArea.append(message.getUser() + ": " + message.getMessage() + " (" + message.getTimestamp() + ")\n");
     }
 
-    // OBESERVER USERLIST
     @Override
     public void userListUpdated(List<String> newUsers) {
         SwingUtilities.invokeLater(() -> {
@@ -266,5 +246,12 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
                 model.addElement(user);
             }
         });
+    }
+
+    //====================================================================================================
+    // GETTERS & SETTERS
+    //====================================================================================================
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

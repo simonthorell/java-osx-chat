@@ -166,6 +166,7 @@ public class LoginWindow extends JPanel {
 
             // TODO: Change to TCP/UDP Options
             IChatClient client = new UDPMulticastClient(getUsername());;
+//            IChatClient client;
 //            if (tcpButton.isSelected()) {
 //                client = new TCPClient();
 //            } else {
