@@ -20,9 +20,13 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     private IMessageHandler handler;
     private volatile boolean running = true;
     private final String username;
+    private List<String> users = new ArrayList<>();
+    private List<UserListObserver> observers = new ArrayList<>();
+
+    // How can you create enum without creating a new file?
     private final String requestUsersMsg = "username_request";
     private final String responseUsersMsg = "user_response";
-    private List<String> users = new ArrayList<>();
+    private final String userDisconnectMsg = "user_disconnect";
 
     //====================================================================================================
     // Constructors
@@ -60,6 +64,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     public void disconnect() throws IOException {
         // Notify other clients that this user has left the chat room
         sendMessage(new ChatMessage(username, "has left the chat room!"));
+        sendMessage(new ChatMessage(username, userDisconnectMsg));
         removeUser(username);
 
         // Close the socket
@@ -77,11 +82,6 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         this.handler = handler;
     }
 
-//    @Override
-//    public List<String> getUsers() {
-//        return users;
-//    }
-
     @Override
     public String[] getUsers() {
         System.out.println("Getting users: " + users);
@@ -94,14 +94,33 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     @Override
     public void addUser(String username) {
         if (!users.contains(username)) {
-            System.out.println("Adding user: " + username);
+            // Avoid duplicates option
             users.add(username);
+            notifyUserListChanged();
         }
     }
 
     @Override
     public void removeUser(String username) {
         users.remove(username);
+        notifyUserListChanged();
+    }
+
+    //====================================================================================================
+    // Observer Methods (UserListObserver for UI)
+    //====================================================================================================
+    private void notifyUserListChanged() {
+        for (UserListObserver observer : observers) {
+            observer.userListUpdated(new ArrayList<>(users));
+        }
+    }
+
+    public void addUserListObserver(UserListObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeUserListObserver(UserListObserver observer) {
+        observers.remove(observer);
     }
 
     //====================================================================================================
@@ -116,21 +135,26 @@ public class UDPMulticastClient implements IChatClient, Runnable {
                 socket.receive(packet);
                 ChatMessage message = deserialize(packet.getData());
 
-                // TODO: Add logic to handle new connection and disconnection messages
-
-                if (message.getMessage().equals(requestUsersMsg)) {
-                    // Respond with the current user's username to the group
-                    sendMessage(new ChatMessage(username, "user_response"));
-                } else if (message.getMessage().equals(responseUsersMsg)) {
-                    // Add the user to the list of active users
-                    addUser(message.getUser());
-                } else if (handler != null) {
-                    handler.handleMessage(message);
+                switch (message.getMessage()) {
+                    case requestUsersMsg:
+                        // Respond with the current user's username to the group
+                        sendMessage(new ChatMessage(username, responseUsersMsg));
+                        break;
+                    case responseUsersMsg:
+                        // Add the user to the list of active users
+                        addUser(message.getUser());
+                        break;
+                    case userDisconnectMsg:
+                        // Remove the user from the list of active users
+                        removeUser(message.getUser());
+                        break;
+                    default:
+                        // Handle all other messages (assumed to be chat messages)
+                        if (handler != null) {
+                            handler.handleMessage(message);
+                        }
+                        break;
                 }
-
-//                if (handler != null) {
-//                    handler.handleMessage(message);
-//                }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

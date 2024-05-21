@@ -13,4 +13,7 @@ public interface IChatClient {
     String[] getUsers(); // Get the list of user names
     void addUser(String username); // Add a user when they connect
     void removeUser(String username); // Remove a user when they disconnect
+
+    void addUserListObserver(UserListObserver observer);
+    void removeUserListObserver(UserListObserver observer);
 }

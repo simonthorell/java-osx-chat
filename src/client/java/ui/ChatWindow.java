@@ -1,5 +1,6 @@
 package client.java.ui;
 import client.java.IMessageHandler;
+import client.java.UserListObserver;
 import client.java.ChatMessage;
 import client.java.IChatClient;
 
@@ -11,16 +12,20 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
-public class ChatWindow extends JPanel implements IMessageHandler {
+public class ChatWindow extends JPanel implements IMessageHandler, UserListObserver {
     private final JTextArea msgArea = new JTextArea(10, 45);
     private final JTextField msgField = new JTextField(30);
     private String username;
     private final IChatClient client;
+    private JList<String> usersList;
 
     public ChatWindow(IChatClient client) {
+        // Set the client and register this class as the message handler, and user list observer
         this.client = client;
         client.setMessageHandler(this);
+        client.addUserListObserver(this);
 
         // Set layout for ChatWindow
         this.setLayout(new BorderLayout());
@@ -86,7 +91,9 @@ public class ChatWindow extends JPanel implements IMessageHandler {
         signOutButton.addActionListener(e -> {
             // Disconnect from the chat server
             try {
+                // Disconnect and remove the user list observer
                 client.disconnect();
+                client.removeUserListObserver(this);
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -139,8 +146,7 @@ public class ChatWindow extends JPanel implements IMessageHandler {
 
         // Setup user list panel
         JPanel usersPanel = new JPanel(new BorderLayout());
-//        JList<String> usersList = new JList<>(new String[]{"Kexet", "Janne", "LasseMedBenet"});
-        JList<String> usersList = new JList<>(client.getUsers());
+        usersList = new JList<>(new DefaultListModel<>());
         JScrollPane userScrollPane = new JScrollPane(usersList);
         usersPanel.add(userScrollPane, BorderLayout.CENTER);
         setFixedCellWidth(usersList);
@@ -247,5 +253,17 @@ public class ChatWindow extends JPanel implements IMessageHandler {
     @Override
     public void handleMessage(ChatMessage message) {
         msgArea.append(message.getUser() + ": " + message.getMessage() + " (" + message.getTimestamp() + ")\n");
+    }
+
+    // OBESERVER USERLIST
+    @Override
+    public void userListUpdated(List<String> newUsers) {
+        SwingUtilities.invokeLater(() -> {
+            DefaultListModel<String> model = (DefaultListModel<String>) usersList.getModel();
+            model.removeAllElements();
+            for (String user : newUsers) {
+                model.addElement(user);
+            }
+        });
     }
 }
