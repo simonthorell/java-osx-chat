@@ -23,11 +23,6 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     private List<String> users = new ArrayList<>();
     private List<UserListObserver> observers = new ArrayList<>();
 
-    // How can you create enum without creating a new file?
-    private final String requestUsersMsg = "username_request";
-    private final String responseUsersMsg = "user_response";
-    private final String userDisconnectMsg = "user_disconnect";
-
     //====================================================================================================
     // Constructors
     //====================================================================================================
@@ -45,8 +40,8 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         socket.joinGroup(group);
         new Thread(this).start();
 
-        // Broadcast a request for active users
-        sendMessage(new ChatMessage(username, requestUsersMsg));
+        // Broadcast a request for active users usernames
+        sendMessage(new ChatMessage(username, MessageType.USERNAME_REQUEST));
 
         // Notify other clients that this user has entered the chat room
         sendMessage(new ChatMessage(username, "has joined the chat room!"));
@@ -64,7 +59,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     public void disconnect() throws IOException {
         // Notify other clients that this user has left the chat room
         sendMessage(new ChatMessage(username, "has left the chat room!"));
-        sendMessage(new ChatMessage(username, userDisconnectMsg));
+        sendMessage(new ChatMessage(username, MessageType.USER_DISCONNECT));
         removeUser(username);
 
         // Close the socket
@@ -135,16 +130,16 @@ public class UDPMulticastClient implements IChatClient, Runnable {
                 socket.receive(packet);
                 ChatMessage message = deserialize(packet.getData());
 
-                switch (message.getMessage()) {
-                    case requestUsersMsg:
+                switch (message.getMessageType()) {
+                    case USERNAME_REQUEST:
                         // Respond with the current user's username to the group
-                        sendMessage(new ChatMessage(username, responseUsersMsg));
+                        sendMessage(new ChatMessage(username, MessageType.USER_RESPONSE));
                         break;
-                    case responseUsersMsg:
+                    case USER_RESPONSE:
                         // Add the user to the list of active users
                         addUser(message.getUser());
                         break;
-                    case userDisconnectMsg:
+                    case USER_DISCONNECT:
                         // Remove the user from the list of active users
                         removeUser(message.getUser());
                         break;

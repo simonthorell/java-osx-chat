@@ -8,12 +8,22 @@ import java.util.List;
 public class ChatMessage implements Serializable {
     private final String user;
     private final String message;
+    private final MessageType msgType;
     private final String timestamp;  // Change to String
 
     // Constructor for chat messages
     public ChatMessage(String user, String message) {
         this.user = user;
         this.message = message;
+        this.msgType = MessageType.CHAT_MESSAGE; // Chat message
+        this.timestamp = setTimestamp();
+    }
+
+    // Constructor for silent settings messages
+    public ChatMessage(String user, MessageType msgType) {
+        this.user = user;
+        this.message = "";
+        this.msgType = msgType;
         this.timestamp = setTimestamp();
     }
 
@@ -27,6 +37,10 @@ public class ChatMessage implements Serializable {
 
     public String getMessage() {
         return message;
+    }
+
+    public MessageType getMessageType() {
+        return msgType;
     }
 
     public String getTimestamp() {
