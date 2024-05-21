@@ -6,7 +6,7 @@ import java.util.List;
 public interface IChatClient {
     void connect() throws IOException;
     void sendMessage(ChatMessage message) throws IOException;
-    void disconnect() throws IOException;
+    void disconnect(UserListObserver observer) throws IOException;
     void setMessageHandler(IMessageHandler handler);
 
     // New methods to manage users

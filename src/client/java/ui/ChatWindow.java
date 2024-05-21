@@ -15,10 +15,10 @@ import java.net.URL;
 import java.util.List;
 
 public class ChatWindow extends JPanel implements IMessageHandler, UserListObserver {
+    public final IChatClient client;
     private final JTextArea msgArea = new JTextArea(10, 45);
     private final JTextField msgField = new JTextField(30);
     private String username;
-    public final IChatClient client;
     private JList<String> usersList;
 
     public ChatWindow(IChatClient client) {
@@ -60,8 +60,9 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
         try {
             client.connect();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Unable to connect to the chat server", "Connection Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unable to connect to the chat server",
+                    "Connection Error", JOptionPane.ERROR_MESSAGE);
+            // e.printStackTrace();
         }
     }
 
@@ -92,8 +93,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
             // Disconnect from the chat server
             try {
                 // Disconnect and remove the user list observer
-                client.disconnect();
-                client.removeUserListObserver(this);
+                client.disconnect(this);
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -180,8 +180,9 @@ public class ChatWindow extends JPanel implements IMessageHandler, UserListObser
                 try {
                     client.sendMessage(chatMessage);
                 } catch (IOException ioException) {
-                    JOptionPane.showMessageDialog(this, "Unable to send message", "Message Error", JOptionPane.ERROR_MESSAGE);
-                    ioException.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Unable to send message",
+                            "Message Error", JOptionPane.ERROR_MESSAGE);
+                    // ioException.printStackTrace();
                 }
                 msgField.setText("");
             }

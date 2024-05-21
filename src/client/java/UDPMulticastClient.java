@@ -56,7 +56,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     }
 
     @Override
-    public void disconnect() throws IOException {
+    public void disconnect(UserListObserver observer) throws IOException {
         // Notify other clients that this user has left the chat room
         sendMessage(new ChatMessage(username, "has left the chat room!"));
         sendMessage(new ChatMessage(username, MessageType.USER_DISCONNECT));
@@ -64,6 +64,9 @@ public class UDPMulticastClient implements IChatClient, Runnable {
 
         // Wait for the thread to finish
         running = false;
+
+        // Remove the observer
+        removeUserListObserver(observer);
 
         // Close the socket
         if (socket != null) {

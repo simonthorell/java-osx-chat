@@ -20,7 +20,6 @@ public class MainWindow extends JFrame implements ActionListener {
     public MainWindow() {
         // Set Window title
         this.setTitle("ChatUp");
-//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         // Set the layout manager & add panels to it
@@ -28,7 +27,6 @@ public class MainWindow extends JFrame implements ActionListener {
 
         // Add sub-panels to the main panel
         mainPanel.add(loginWindow, "LoginWindow");
-//        mainPanel.add(chatWindow, "ChatWindow");
 
         // Create an outer panel for padding
         JPanel outerPanel = new JPanel(new BorderLayout());
@@ -52,11 +50,11 @@ public class MainWindow extends JFrame implements ActionListener {
             public void windowClosing(WindowEvent e) {
                 try {
                     // Disconnect the client when the window is closing
-                    chatWindow.client.disconnect();
+                    chatWindow.client.disconnect(chatWindow);
                     MainWindow.this.dispose();
                 } catch (Exception ex) {
                     // Connection already disconnected, so just close the window
-                    MainWindow.this.dispose(); // Closes the window and releases resources
+                    MainWindow.this.dispose();
                 }
             }
         });
@@ -97,10 +95,6 @@ public class MainWindow extends JFrame implements ActionListener {
         resizeWindow();
     }
 
-    public void setUsername(String username) {
-        chatWindow.setUsername(username);
-    }
-
     // Method to resize and center the window when switching cards
     public void resizeWindow() {
         // Resize window based on the preferred size of the current panel
@@ -111,8 +105,7 @@ public class MainWindow extends JFrame implements ActionListener {
             this.setMinimumSize(preferredSize);
         }
 
-        // Set resizable window based on the current panel
-        // All other windows can be resized
+        // Set resizable window based on the current panel (LoginWindow is not resizable)
         this.setResizable(!(currentPanel instanceof LoginWindow));
     }
 
