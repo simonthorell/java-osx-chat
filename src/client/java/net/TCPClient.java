@@ -33,6 +33,9 @@ public class TCPClient implements IChatClient, Runnable {
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         new Thread(this).start();
+
+        // Request connect users list
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USERNAME_REQUEST));
     }
 
     @Override
@@ -43,6 +46,7 @@ public class TCPClient implements IChatClient, Runnable {
 
     @Override
     public void disconnect(IUserListObserver observer) throws IOException {
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_DISCONNECT));
         socket.close();
         removeUserListObserver(observer);
     }

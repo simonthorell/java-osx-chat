@@ -25,10 +25,28 @@ public class ClientHandler implements Runnable {
         try {
             ChatMessage inputMessage;
             while ((inputMessage = (ChatMessage) in.readObject()) != null) {
-                // TODO: Log messages to DB
-                // String message = inputMessage.getMessage();
-                // String username = inputMessage.getUser();
-                server.broadcastMessage(inputMessage, this);
+
+                switch(inputMessage.getMessageType()) {
+                    case USERNAME_REQUEST:
+                        // TODO: Return user list from server user DB.
+                        System.out.println(inputMessage.getUser() + " requested user list");
+                        break;
+                    case USER_RESPONSE:
+                        // TODO: Remove for TCP... Handle with server user DB.
+                        System.out.println(inputMessage.getUser() + " responded with their username");
+                        break;
+                    case USER_DISCONNECT:
+                        System.out.println(inputMessage.getUser() + " disconnected");
+                        break;
+                    case CHAT_MESSAGE:
+                        // Broadcast message to all clients
+                        System.out.println(inputMessage.getUser() + " sent: " + inputMessage.getMessage());
+                        server.broadcastMessage(inputMessage);
+                        break;
+                    default:
+                        System.out.println("Received unknown message type: " + inputMessage.getMessageType());
+                        break;
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Client disconnected");

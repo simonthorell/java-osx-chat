@@ -38,13 +38,10 @@ public class ChatServer {
         }
     }
 
-    public void broadcastMessage(ChatMessage message, ClientHandler excludeUser) {
+    public void broadcastMessage(ChatMessage message) {
         for (ClientHandler ch : clients) {
             System.out.println("Broadcast message to: " + ch);
             ch.sendMessage(message);
-//            if (ch != excludeUser) {
-//                ch.sendMessage(message);
-//            }
         }
     }
 
