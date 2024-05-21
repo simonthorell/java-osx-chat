@@ -1,6 +1,6 @@
 package client.java.ui;
-import client.java.IMessageHandler;
-import client.java.IUserListObserver;
+import client.java.net.IMessageHandler;
+import client.java.net.IUserListObserver;
 import client.java.ChatMessage;
 import client.java.IChatClient;
 

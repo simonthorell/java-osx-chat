@@ -1,5 +1,8 @@
 package client.java;
 
+import client.java.net.IMessageHandler;
+import client.java.net.IUserListObserver;
+
 import java.io.IOException;
 
 public interface IChatClient {

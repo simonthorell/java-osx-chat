@@ -1,4 +1,4 @@
-package client.java;
+package client.java.net;
 
 import java.util.List;
 
