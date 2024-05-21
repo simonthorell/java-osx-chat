@@ -1,7 +1,7 @@
 package client.java.ui;
 
 import client.java.IChatClient;
-import client.java.net.UDPMulticastClient;
+import client.java.net.UDPClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -164,17 +164,21 @@ public class LoginWindow extends JPanel {
                 return;
             }
 
-            // TODO: Change to TCP/UDP Options
-            IChatClient client = new UDPMulticastClient(getUsername());;
-//            IChatClient client;
-//            if (tcpButton.isSelected()) {
-//                client = new TCPClient();
-//            } else {
-//                client = new UDPMulticastClient();
-//            }
+            IChatClient client = null;
+            if (tcpButton.isSelected()) {
+                // Show Dialog (Remove when TCP is implemented)
+                JOptionPane.showMessageDialog(this,
+                        "TCP protocol is not yet supported", "Error", JOptionPane.ERROR_MESSAGE);
+                // client = new TCPClient(getUsername());
+            } else {
+                client = new UDPClient(getUsername());
+            }
 
-            MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
-            mainWindow.switchToChatWindow(client);
+            // If client has been initialized, switch to ChatWindow
+            if (client != null) {
+                MainWindow mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
+                mainWindow.switchToChatWindow(client);
+            }
         });
 
         return loginBtn;

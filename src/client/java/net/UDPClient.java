@@ -13,7 +13,7 @@ import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UDPMulticastClient implements IChatClient, Runnable {
+public class UDPClient implements IChatClient, Runnable {
     private MulticastSocket socket;
     private InetAddress group;
     private IMessageHandler handler;
@@ -25,7 +25,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
     //====================================================================================================
     // Constructors
     //====================================================================================================
-    public UDPMulticastClient(String username) {
+    public UDPClient(String username) {
         this.username = username;
     }
 
