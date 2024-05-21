@@ -4,19 +4,23 @@ import client.java.ChatMessage;
 import client.java.IChatClient;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCPClient implements IChatClient, Runnable{
-    private final String username;
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     private IMessageHandler handler;
+    private final List<String> users = new ArrayList<>();
     private final List<IUserListObserver> observers = new ArrayList<>();
 
     //====================================================================================================
     // Constructors
     //====================================================================================================
     public TCPClient(String username) {
-        this.username = username;
+        users.add(username);
     }
 
     //====================================================================================================
@@ -24,17 +28,22 @@ public class TCPClient implements IChatClient, Runnable{
     //====================================================================================================
     @Override
     public void connect() throws IOException {
-        // TODO: Implement
+        socket = new Socket("serverAddress", Constants.TCP_PORT); // Replace with actual address and port
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
+        new Thread(this).start();
     }
 
     @Override
     public void sendMessage(ChatMessage message) throws IOException {
-        // TODO: Implement
+        out.writeObject(message);
+        out.flush();
     }
 
     @Override
     public void disconnect(IUserListObserver observer) throws IOException {
-        // TODO: Implement
+        socket.close();
+        removeUserListObserver(observer);
     }
 
     @Override
@@ -47,17 +56,23 @@ public class TCPClient implements IChatClient, Runnable{
     //====================================================================================================
     @Override
     public void addUser(String username) {
-        // TODO: Implement
+        if (!users.contains(username)) {
+            users.add(username);
+            notifyUserListChanged();
+        }
     }
 
     @Override
     public void removeUser(String username) {
-        // TODO: Implement
+        if (users.remove(username)) {
+            notifyUserListChanged();
+        }
     }
 
     @Override
     public void addUserListObserver(IUserListObserver observer) {
         observers.add(observer);
+        observer.userListUpdated(new ArrayList<>(users));
     }
 
     @Override
@@ -65,11 +80,10 @@ public class TCPClient implements IChatClient, Runnable{
         observers.remove(observer);
     }
 
-    // Helper method to notify observers of changes to the user list
     private void notifyUserListChanged() {
-//        for (IUserListObserver observer : observers) {
-//            observer.userListUpdated(new ArrayList<>(users));
-//        }
+        for (IUserListObserver observer : observers) {
+            observer.userListUpdated(new ArrayList<>(users));
+        }
     }
 
     //====================================================================================================
@@ -77,5 +91,22 @@ public class TCPClient implements IChatClient, Runnable{
     //====================================================================================================
     @Override
     public void run() {
-        // TODO: Implement
+        try {
+            while (!socket.isClosed()) {
+                ChatMessage message = (ChatMessage) in.readObject();
+                if (handler != null) {
+                    handler.handleMessage(message);
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error handling incoming message: " + e.getMessage());
+        } finally {
+            try {
+                in.close();
+                out.close();
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+        }
     }
