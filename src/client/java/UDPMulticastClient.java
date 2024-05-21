@@ -62,6 +62,9 @@ public class UDPMulticastClient implements IChatClient, Runnable {
         sendMessage(new ChatMessage(username, MessageType.USER_DISCONNECT));
         removeUser(username);
 
+        // Wait for the thread to finish
+        running = false;
+
         // Close the socket
         if (socket != null) {
             socket.leaveGroup(group);
@@ -152,7 +155,7 @@ public class UDPMulticastClient implements IChatClient, Runnable {
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Error receiving message: " + e.getMessage());
         }
     }
 
