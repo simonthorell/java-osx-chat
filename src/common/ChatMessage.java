@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ChatMessage implements Serializable {
     public enum MessageType {
-        USERNAME_REQUEST, USER_RESPONSE, USER_LIST, USER_DISCONNECT, CHAT_MESSAGE
+        USER_CONNECT, USER_RESPONSE, USER_LIST, USER_DISCONNECT, CHAT_MESSAGE
     }
     private final String user;
     private final String message;
@@ -24,7 +24,7 @@ public class ChatMessage implements Serializable {
         this.users = null;
     }
 
-    // Constructor for silent settings messages
+    // Constructor for sending username (used for UDP multicast)
     public ChatMessage(String user, MessageType msgType) {
         this.user = user;
         this.message = "";
@@ -33,9 +33,9 @@ public class ChatMessage implements Serializable {
         this.users = null;
     }
 
-    // Send user list
-    public ChatMessage(String user, MessageType msgType, List<String> users) {
-        this.user = user;
+    // Constructor for sending user list (used for TCP client-server architecture)
+    public ChatMessage(MessageType msgType, List<String> users) {
+        this.user = "";
         this.message = "";
         this.msgType = msgType;
         this.timestamp = setTimestamp();

@@ -40,7 +40,7 @@ public class UDPClient implements IChatClient, Runnable {
         new Thread(this).start();
 
         // Broadcast a request for active users usernames
-        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USERNAME_REQUEST));
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_CONNECT));
 
         // Notify other clients that this user has entered the chat room
         sendMessage(new ChatMessage(username, "has joined the chat room!"));
@@ -126,19 +126,17 @@ public class UDPClient implements IChatClient, Runnable {
                 ChatMessage message = deserialize(packet.getData());
 
                 switch (message.getMessageType()) {
-                    case USERNAME_REQUEST:
+                    case USER_CONNECT:
                         // Respond with the current user's username to the group
                         sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_RESPONSE));
                         break;
                     case USER_RESPONSE:
-                        // Add the user to the list of active users
                         addUser(message.getUser());
                         break;
                     case USER_DISCONNECT:
-                        // Remove the user from the list of active users
                         removeUser(message.getUser());
                         break;
-                    default:
+                    case CHAT_MESSAGE:
                         // Handle all other messages (assumed to be chat messages)
                         if (handler != null) {
                             handler.handleMessage(message);

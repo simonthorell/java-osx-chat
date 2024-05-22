@@ -37,7 +37,10 @@ public class TCPClient implements IChatClient, Runnable {
         new Thread(this).start();
 
         // Request connect users list
-        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USERNAME_REQUEST));
+        sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_CONNECT));
+
+        // Notify other clients that this user has entered the chat room
+        sendMessage(new ChatMessage(username, "has joined the chat room!"));
     }
 
     @Override
@@ -48,6 +51,8 @@ public class TCPClient implements IChatClient, Runnable {
 
     @Override
     public void disconnect(IUserListObserver observer) throws IOException {
+        // Notify other clients that this user has left the chat room
+        sendMessage(new ChatMessage(username, "has left the chat room!"));
         sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_DISCONNECT));
         socket.close();
         removeUserListObserver(observer);
@@ -104,21 +109,25 @@ public class TCPClient implements IChatClient, Runnable {
 
                 switch (message.getMessageType()) {
                     // This will include Connect & Disconnect messages
-                    case USER_LIST:
+                    case USER_CONNECT:
                         // Update the list of active users
                         users = message.getUsers();
                         System.out.println("Received user list: " + users);
-                        // Notify observers of the updated user list
+                        // Notify UI to update the user list
+                        notifyUserListChanged();
+                        break;
+                    case USER_DISCONNECT:
+                        // Update the list of active users
+                        users = message.getUsers();
+                        System.out.println("Received user list: " + users);
+                        // Notify UI to update the user list
                         notifyUserListChanged();
                         break;
                     // This will include all Chat messages
                     case CHAT_MESSAGE:
-                        // TODO: Remove default case...
                         if (handler != null) {
                             handler.handleMessage(message);
                         }
-                    default:
-                        // Catch all other message types...
                         break;
                 }
             }

@@ -3,8 +3,6 @@ package client.java;
 import client.java.ui.MainWindow;
 import client.java.ui.MenuBar;
 import javax.swing.*;
-
-// https://github.com/JFormDesigner/FlatLaf/tree/main/flatlaf-intellij-themes#themes
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
 import com.formdev.flatlaf.util.SystemInfo;
 
@@ -25,7 +23,7 @@ public class Main {
             mainWindow = new MainWindow();
             frame = mainWindow.getFrame();
 
-            // Setup app for macOS (TODO: add cross-platform support)
+            // Setup app for macOS (Add cross platform compatibility later)
             setPropsMacOS();
 
             // Setup the system menubar from MenuBar UI class

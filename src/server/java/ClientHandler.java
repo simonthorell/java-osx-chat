@@ -4,7 +4,6 @@ import server.java.ChatServer;
 import common.ChatMessage;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -27,25 +26,20 @@ public class ClientHandler implements Runnable {
             while ((inputMessage = (ChatMessage) in.readObject()) != null) {
 
                 switch(inputMessage.getMessageType()) {
-                    case USERNAME_REQUEST:
-                        // System.out.println(inputMessage.getUser() + " requested user list");
-                        // This is new user, so add it to user list
+                    case USER_CONNECT:
+                        // This is new user, so add it to user list then send updated list to all clients
                         server.addUser(inputMessage.getUser());
-                        // System.out.println(server.getUsers());
-                        server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
-                                ChatMessage.MessageType.USER_LIST, server.getUsers()));
-                        break;
-                    case USER_RESPONSE:
-                        // TODO: Remove for TCP... Handle with server user DB.
+                        server.broadcastMessage(new ChatMessage(
+                                ChatMessage.MessageType.USER_CONNECT, server.getUsers()));
                         break;
                     case USER_DISCONNECT:
-                        // Remove user from user list
+                        // Remove user from user list & Send updated list to all clients
                         server.removeUser(inputMessage.getUser());
-                        server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
-                                  ChatMessage.MessageType.USER_LIST, server.getUsers()));
+                        server.broadcastMessage(new ChatMessage(
+                                  ChatMessage.MessageType.USER_DISCONNECT, server.getUsers()));
                         break;
                     case CHAT_MESSAGE:
-                        // Broadcast message to all clients
+                        // Broadcast chat message to all clients
                         System.out.println(inputMessage.getUser() + " sent: " +
                                 inputMessage.getMessage());
                         server.broadcastMessage(inputMessage);
