@@ -4,6 +4,7 @@ import server.java.ChatServer;
 import common.ChatMessage;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
@@ -27,19 +28,21 @@ public class ClientHandler implements Runnable {
 
                 switch(inputMessage.getMessageType()) {
                     case USERNAME_REQUEST:
-                        System.out.println(inputMessage.getUser() + " requested user list");
+                        // System.out.println(inputMessage.getUser() + " requested user list");
                         // This is new user, so add it to user list
-                        server.users.add(inputMessage.getUser());
-                        System.out.println(server.users);
+                        server.addUser(inputMessage.getUser());
+                        // System.out.println(server.getUsers());
                         server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
-                                ChatMessage.MessageType.USER_LIST, server.users));
+                                ChatMessage.MessageType.USER_LIST, server.getUsers()));
                         break;
                     case USER_RESPONSE:
                         // TODO: Remove for TCP... Handle with server user DB.
                         break;
                     case USER_DISCONNECT:
                         // Remove user from user list
-                        server.users.remove(inputMessage.getUser());
+                        server.removeUser(inputMessage.getUser());
+                        server.broadcastMessage(new ChatMessage(inputMessage.getUser(),
+                                  ChatMessage.MessageType.USER_LIST, server.getUsers()));
                         break;
                     case CHAT_MESSAGE:
                         // Broadcast message to all clients

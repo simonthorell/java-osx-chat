@@ -15,8 +15,7 @@ public class ChatServer {
     private ServerSocket serverSocket;
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private final List<ClientHandler> clients = new ArrayList<>();
-    // How can this be made thread-safe???
-    public volatile List<String> users = new ArrayList<>();
+    private final List<String> users = new ArrayList<>();
 
     public ChatServer(int port) {
         this.port = port;
@@ -59,6 +58,24 @@ public class ChatServer {
             }
         } catch (IOException e) {
             System.out.println("Could not close server socket: " + e.getMessage());
+        }
+    }
+
+    public void addUser(String user) {
+        synchronized (users) {
+            users.add(user);
+        }
+    }
+
+    public void removeUser(String user) {
+        synchronized (users) {
+            users.remove(user);
+        }
+    }
+
+    public List<String> getUsers() {
+        synchronized (users) {
+            return new ArrayList<>(users); // Return a copy to avoid issues while iterating outside the synchronized block
         }
     }
 }

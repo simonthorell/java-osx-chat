@@ -7,6 +7,7 @@ import common.Constants;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TCPClient implements IChatClient, Runnable {
@@ -16,7 +17,7 @@ public class TCPClient implements IChatClient, Runnable {
     private IMessageHandler handler;
     private final String username;
     private final List<IUserListObserver> observers = new ArrayList<>();
-    private volatile List<String> users = new ArrayList<>();
+    private List<String> users = Collections.synchronizedList(new ArrayList<>());
 
     //====================================================================================================
     // Constructors
@@ -106,6 +107,7 @@ public class TCPClient implements IChatClient, Runnable {
                     case USER_LIST:
                         // Update the list of active users
                         users = message.getUsers();
+                        System.out.println("Received user list: " + users);
                         // Notify observers of the updated user list
                         notifyUserListChanged();
                         break;
