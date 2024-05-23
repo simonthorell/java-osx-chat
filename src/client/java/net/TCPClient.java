@@ -18,44 +18,51 @@ public class TCPClient implements IChatClient, Runnable {
   private IMessageHandler handler;
   private List<String> users = Collections.synchronizedList(new ArrayList<>());
 
+  // Constructor
   public TCPClient(String username) {
     this.username = username;
   }
 
+  // Connect to the server
   @Override
   public void connect() throws IOException {
+    // Create a socket and start a new thread to handle incoming messages
     socket = new Socket(Constants.SERVER_TCP_IP, Constants.TCP_PORT);
     out = new ObjectOutputStream(socket.getOutputStream());
     in = new ObjectInputStream(socket.getInputStream());
     new Thread(this).start();
 
-    // Request connect users list
+    // Request connected users list & notify that this user has entered the chat room
     sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_CONNECT));
-
-    // Notify other clients that this user has entered the chat room
     sendMessage(new ChatMessage(username, "has joined the chat room!"));
   }
 
+  // Send a message to the server
   @Override
   public void sendMessage(ChatMessage message) throws IOException {
     out.writeObject(message);
     out.flush();
   }
 
+  // Disconnect from the server
   @Override
   public void disconnect(IUserListObserver observer) throws IOException {
     // Notify other clients that this user has left the chat room
     sendMessage(new ChatMessage(username, "has left the chat room!"));
     sendMessage(new ChatMessage(username, ChatMessage.MessageType.USER_DISCONNECT));
+
+    // Close the socket and remove the observer
     socket.close();
     removeUserListObserver(observer);
   }
 
+  // Set the message handler
   @Override
   public void setMessageHandler(IMessageHandler handler) {
     this.handler = handler;
   }
 
+  // Add or remove users
   @Override
   public void addUser(String username) {
     if (!users.contains(username)) {
@@ -71,6 +78,7 @@ public class TCPClient implements IChatClient, Runnable {
     }
   }
 
+  // UI Observer methods
   @Override
   public void addUserListObserver(IUserListObserver observer) {
     observers.add(observer);
@@ -88,6 +96,7 @@ public class TCPClient implements IChatClient, Runnable {
     }
   }
 
+  // Runnable interface method to handle incoming messages
   @Override
   public void run() {
     try {
@@ -95,22 +104,11 @@ public class TCPClient implements IChatClient, Runnable {
         ChatMessage message = (ChatMessage) in.readObject();
 
         switch (message.getMessageType()) {
-            // This will include Connect & Disconnect messages
-          case USER_CONNECT:
-            // Update the list of active users
-            users = message.getUsers();
+          case USER_CONNECT, USER_DISCONNECT:
+            users = message.getUsers(); // Update the list of active users
             System.out.println("Received user list: " + users);
-            // Notify UI to update the user list
-            notifyUserListChanged();
+            notifyUserListChanged(); // Notify observers
             break;
-          case USER_DISCONNECT:
-            // Update the list of active users
-            users = message.getUsers();
-            System.out.println("Received user list: " + users);
-            // Notify UI to update the user list
-            notifyUserListChanged();
-            break;
-            // This will include all Chat messages
           case CHAT_MESSAGE:
             if (handler != null) {
               handler.handleMessage(message);

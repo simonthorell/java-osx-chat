@@ -21,10 +21,12 @@ public class UDPClient implements IChatClient, Runnable {
   private IMessageHandler handler;
   private volatile boolean running = true;
 
+  // Constructor
   public UDPClient(String username) {
     this.username = username;
   }
 
+  // Connect to the UDP multicast group
   @Override
   public void connect() throws IOException {
     socket = new MulticastSocket(Constants.MULTICAST_PORT);
@@ -40,6 +42,7 @@ public class UDPClient implements IChatClient, Runnable {
     addUser(username);
   }
 
+  // Send a message to the multicast group
   @Override
   public void sendMessage(ChatMessage message) throws IOException {
     byte[] buf = serialize(message);
@@ -47,6 +50,7 @@ public class UDPClient implements IChatClient, Runnable {
     socket.send(packet);
   }
 
+  // Disconnect from the multicast group
   @Override
   public void disconnect(IUserListObserver observer) throws IOException {
     // Notify other clients that this user has left the chat room
@@ -67,11 +71,13 @@ public class UDPClient implements IChatClient, Runnable {
     }
   }
 
+  // Set the message handler
   @Override
   public void setMessageHandler(IMessageHandler handler) {
     this.handler = handler;
   }
 
+  // Add or remove users
   @Override
   public void addUser(String username) {
     if (!users.contains(username)) {
@@ -87,6 +93,7 @@ public class UDPClient implements IChatClient, Runnable {
     notifyUserListChanged();
   }
 
+  // UI Observer methods
   @Override
   public void addUserListObserver(IUserListObserver observer) {
     observers.add(observer);
@@ -104,6 +111,7 @@ public class UDPClient implements IChatClient, Runnable {
     }
   }
 
+  // Runnable method to listen for incoming messages
   @Override
   public void run() {
     try {
