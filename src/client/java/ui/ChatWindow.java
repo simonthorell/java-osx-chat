@@ -22,8 +22,9 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
   private JList<String> usersList;
 
   public ChatWindow(IChatClient client) {
-    // Set the client and register this class as the message handler, and user list observer
     this.client = client;
+
+    // Set the message handler and user list observer for the client
     client.setMessageHandler(this);
     client.addUserListObserver(this);
 
@@ -37,7 +38,6 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
 
     // Adding padding around sub-panels
     top.setBorder(BorderFactory.createEmptyBorder(7, 0, 7, 0));
-    // center.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
     bottom.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
     // Add components to ChatWindow
@@ -66,10 +66,10 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
           "ChatWindow (Line63): Unable to connect to the chat server",
           "Connection Error",
           JOptionPane.ERROR_MESSAGE);
-      e.printStackTrace();
     }
   }
 
+  // Top panel hold the app name and action buttons
   private JPanel topPanel() {
     // Create a panel for the top section with BorderLayout
     JPanel northPanel = new JPanel(new BorderLayout());
@@ -98,7 +98,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
             // Disconnect and remove the user list observer
             client.disconnect(this);
           } catch (IOException ioException) {
-            ioException.printStackTrace();
+            System.out.println("Error disconnecting from the server");
           }
 
           // Switch back to the login window
@@ -141,6 +141,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
     return northPanel;
   }
 
+  // Center panel holds the message area and user list
   private JSplitPane centerPanel() {
     // Setup message list panel
     JPanel msgPanel = new JPanel(new BorderLayout());
@@ -156,8 +157,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
     JScrollPane userScrollPane = new JScrollPane(usersList);
     usersPanel.add(userScrollPane, BorderLayout.CENTER);
 
-    // Set minimum size for users panel based on the longest username
-    // Dimension minSize = usersPanel.getPreferredSize();
+    // Set a fixed minimum size for the user list panel
     usersPanel.setMinimumSize(new Dimension(120, 1));
 
     // Split pane for message and user lists
@@ -167,6 +167,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
     return centerSplitPane;
   }
 
+  // Bottom panel holds the message input field and send button
   private JPanel bottomPanel() {
     // Setup message input panel
     JPanel inputPanel = new JPanel(new BorderLayout());
@@ -174,6 +175,25 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
     msgField.putClientProperty("JComponent.roundRect", true);
     inputPanel.add(msgField, BorderLayout.CENTER);
 
+    JButton sendButton = sendMessage();
+    inputPanel.add(sendButton, BorderLayout.EAST);
+
+    // Add key listener to message field to trigger button click on Enter key
+    msgField.addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+              sendButton.doClick();
+            }
+          }
+        });
+
+    return inputPanel;
+  }
+
+  // Send message button
+  private JButton sendMessage() {
     JButton sendButton = new JButton("Send");
     sendButton.putClientProperty("JButton.buttonType", "roundRect");
     sendButton.setBackground(UIConstants.PRIMARY_COLOR);
@@ -193,22 +213,10 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
             msgField.setText("");
           }
         });
-    inputPanel.add(sendButton, BorderLayout.EAST);
-
-    // Add key listener to message field to trigger button click on Enter key
-    msgField.addKeyListener(
-        new KeyAdapter() {
-          @Override
-          public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-              sendButton.doClick();
-            }
-          }
-        });
-
-    return inputPanel;
+    return sendButton;
   }
 
+  // General method to create action buttons with icons (path as parameter)
   private JButton createActionButton(String iconPath) {
     JButton btn = new JButton();
 
@@ -233,12 +241,14 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
     return btn;
   }
 
+  // Handle incoming chat messages
   @Override
   public void handleMessage(ChatMessage message) {
     msgArea.append(
         message.getUser() + ": " + message.getMessage() + " (" + message.getTimestamp() + ")\n");
   }
 
+  // Update the user list when a new user joins or leaves
   @Override
   public void userListUpdated(List<String> newUsers) {
     SwingUtilities.invokeLater(
@@ -251,6 +261,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
         });
   }
 
+  // Set the username for the chat window
   public void setUsername(String username) {
     this.username = username;
   }

@@ -20,10 +20,12 @@ public class LoginWindow extends JPanel {
   public LoginWindow() {
     this.setLayout(new BorderLayout());
 
+    // Add sub-panels
     JPanel top = appLogoPanel();
     JPanel center = inputFieldsPanel();
     JPanel bottom = buttonPanel();
 
+    // Adding padding around sub-panels
     top.setBorder(BorderFactory.createEmptyBorder(60, 0, 10, 0));
     center.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
     bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
@@ -46,6 +48,21 @@ public class LoginWindow extends JPanel {
         });
   }
 
+  // App logo panel (Top Panel)
+  private JPanel appLogoPanel() {
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    panel.setLayout(new GridLayout(2, 1, 10, 5));
+    JLabel appName = new JLabel("ChatUp", JLabel.CENTER);
+    appName.setFont(new Font("Segoe UI", Font.BOLD, 16));
+    JLabel imageLabel = appLogo();
+
+    panel.add(imageLabel);
+    panel.add(appName);
+
+    return panel;
+  }
+
+  // Input fields panel (Center Panel)
   private JPanel inputFieldsPanel() {
     JPanel panel = new JPanel();
     panel.setLayout(new GridLayout(4, 1, 10, 5));
@@ -83,19 +100,7 @@ public class LoginWindow extends JPanel {
     return panel;
   }
 
-  private JPanel appLogoPanel() {
-    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    panel.setLayout(new GridLayout(2, 1, 10, 5));
-    JLabel appName = new JLabel("ChatUp", JLabel.CENTER);
-    appName.setFont(new Font("Segoe UI", Font.BOLD, 16));
-    JLabel imageLabel = appLogo();
-
-    panel.add(imageLabel);
-    panel.add(appName);
-
-    return panel;
-  }
-
+  // Button panel (Bottom Panel)
   private JPanel buttonPanel() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -126,6 +131,7 @@ public class LoginWindow extends JPanel {
     return panel;
   }
 
+  // Get app logo method
   private JLabel appLogo() {
     ImageIcon imageIcon = null;
     URL imageURL = getClass().getClassLoader().getResource("icon.png");
@@ -141,6 +147,7 @@ public class LoginWindow extends JPanel {
     return new JLabel(imageIcon != null ? imageIcon : new ImageIcon(), JLabel.CENTER);
   }
 
+  // Login button method
   private JButton loginBtn() {
     JButton loginBtn = new JButton("Login to Chat");
     loginBtn.putClientProperty("JButton.buttonType", "roundRect");
@@ -179,6 +186,7 @@ public class LoginWindow extends JPanel {
     return loginBtn;
   }
 
+  // Getter for username
   public String getUsername() {
     return usernameField.getText();
   }

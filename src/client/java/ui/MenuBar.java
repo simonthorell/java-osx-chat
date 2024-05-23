@@ -21,6 +21,10 @@ public class MenuBar extends JMenuBar {
   private final JMenuItem zoomOutMenuItem = new JMenuItem("Zoom Out");
   private final JMenuItem resetZoomMenuItem = new JMenuItem("Reset Zoom");
 
+  // Menu items for Window menu
+  private final JMenuItem minimizeMenuItem = new JMenuItem("Minimize");
+  private final JMenuItem maximizeMenuItem = new JMenuItem("Maximize");
+
   // Menu items for Help menu
   private final JMenuItem aboutMenuItem = new JMenuItem("About ChatUp");
 
@@ -64,6 +68,11 @@ public class MenuBar extends JMenuBar {
         e -> {
           System.out.println("Reset Zoom Action");
         });
+  }
+
+  private void setupWindowMenu() {
+    windowMenu.add(minimizeMenuItem);
+    windowMenu.add(maximizeMenuItem);
   }
 
   private void setupHelpMenu() {

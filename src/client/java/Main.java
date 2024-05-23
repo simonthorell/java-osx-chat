@@ -13,47 +13,51 @@ public class Main {
   private JFrame frame;
 
   public Main() {
-    // Set the application name for macOS menu bar & dock
+    // Set App Name for macOS menu bar & dock
     setupMacOS();
 
-    // Setup FlatLaf theme & Swing components
+    // Set the FlatLaf theme to override the default Swing theme
     FlatOneDarkIJTheme.setup();
+
+    // Create the main GUI window
     SwingUtilities.invokeLater(
         () -> {
           mainWindow = new MainWindow();
           frame = mainWindow.getFrame();
 
-          setPropsMacOS(); // Setup app for macOS
+          // Setup macOS specific properties
+          setPropsMacOS();
 
-          // Setup the system menubar from MenuBar UI class
+          // Override the OS menubar with the app menubar
           MenuBar menuBar = new MenuBar();
           frame.setJMenuBar(menuBar);
 
-          frame.setVisible(true); // Show the main window
+          // Show the main window
+          frame.setVisible(true);
         });
   }
 
+  // Main Method
   public static void main(String[] args) {
     new Main();
   }
 
   // MacOS specific settings
   public void setupMacOS() {
-    // Set the application name for macOS menu bar
+    // Set the app menu bar name & replace the macOS menu bar with app menu bar
     System.setProperty("apple.awt.application.name", "ChatUp");
-    // Replace the macOS menu bar with app menu bar
     System.setProperty("apple.laf.useScreenMenuBar", "true");
   }
 
   public void setPropsMacOS() {
-    // Hide the app menu bar defaulted in macOS
+    // Hide the app title bar defaulted in macOS & set the app icon in the dock
     if (SystemInfo.isMacFullWindowContentSupported) {
       frame.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
       frame.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
       frame.getRootPane().putClientProperty("apple.awt.windowTitleVisible", false);
     }
 
-    // Set the application icon for macOS dock (Java 9+)
+    // Set the application icon for macOS dock
     Taskbar taskbar = Taskbar.getTaskbar();
     try {
       URL imageURL = getClass().getClassLoader().getResource("icon.png");

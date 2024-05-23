@@ -11,6 +11,7 @@ public class ClientHandler implements Runnable {
   private final ObjectOutputStream out;
   private final ChatServer server;
 
+  // Constructor
   public ClientHandler(Socket socket, ChatServer server) throws IOException {
     this.socket = socket;
     this.server = server;
@@ -19,29 +20,27 @@ public class ClientHandler implements Runnable {
     in = new ObjectInputStream(socket.getInputStream());
   }
 
+  // Run method (Runnable interface)
   @Override
   public void run() {
     try {
       ChatMessage inputMessage;
       while ((inputMessage = (ChatMessage) in.readObject()) != null) {
 
+        // Switch on the message type as defined in the ChatMessage class (common package)
         switch (inputMessage.getMessageType()) {
-          case USER_CONNECT:
-            // This is new user, so add it to user list
-            // then send updated list to all clients
+          case USER_CONNECT: // Add the user to the server
             server.addUser(inputMessage.getUser());
             server.broadcastMessage(
                 new ChatMessage(ChatMessage.MessageType.USER_CONNECT, server.getUsers()));
             break;
-          case USER_DISCONNECT:
-            // Remove user from user list &
-            // send updated list to all clients
+          case USER_DISCONNECT: // Remove the user from the server
             server.removeUser(inputMessage.getUser());
             server.broadcastMessage(
                 new ChatMessage(ChatMessage.MessageType.USER_DISCONNECT, server.getUsers()));
             break;
-          case CHAT_MESSAGE:
-            // Broadcast chat message to all clients
+
+          case CHAT_MESSAGE: // Broadcast the message to all clients
             System.out.println(inputMessage.getUser() + " sent: " + inputMessage.getMessage());
             server.broadcastMessage(inputMessage);
             break;
@@ -58,6 +57,7 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  // Sends a message to the client
   public void sendMessage(ChatMessage message) {
     System.out.println("Sent message: " + message);
     try {
@@ -68,13 +68,14 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  // Closes all resources
   private void closeResources() {
     try {
       if (in != null) in.close();
       if (out != null) out.close();
       if (socket != null) socket.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println("Error closing resources: " + e.getMessage());
     }
   }
 }
