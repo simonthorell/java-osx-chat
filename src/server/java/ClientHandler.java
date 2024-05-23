@@ -16,7 +16,6 @@ public class ClientHandler implements Runnable {
     this.socket = socket;
     this.server = server;
     out = new ObjectOutputStream(socket.getOutputStream());
-    out.flush();
     in = new ObjectInputStream(socket.getInputStream());
   }
 
@@ -27,20 +26,19 @@ public class ClientHandler implements Runnable {
       ChatMessage inputMessage;
       while ((inputMessage = (ChatMessage) in.readObject()) != null) {
 
-        // Switch on the message type as defined in the ChatMessage class (common package)
+        // Handle message as defined in the ChatMessage class (common package)
         switch (inputMessage.getMessageType()) {
-          case USER_CONNECT: // Add the user to the server
+          case USER_CONNECT:
             server.addUser(inputMessage.getUser());
             server.broadcastMessage(
                 new ChatMessage(ChatMessage.MessageType.USER_CONNECT, server.getUsers()));
             break;
-          case USER_DISCONNECT: // Remove the user from the server
+          case USER_DISCONNECT:
             server.removeUser(inputMessage.getUser());
             server.broadcastMessage(
                 new ChatMessage(ChatMessage.MessageType.USER_DISCONNECT, server.getUsers()));
             break;
-
-          case CHAT_MESSAGE: // Broadcast the message to all clients
+          case CHAT_MESSAGE:
             System.out.println(inputMessage.getUser() + " sent: " + inputMessage.getMessage());
             server.broadcastMessage(inputMessage);
             break;
@@ -50,8 +48,10 @@ public class ClientHandler implements Runnable {
         }
       }
     } catch (IOException | ClassNotFoundException e) {
+      // If an error occurs while reading the input stream
       System.out.println("Client disconnected");
     } finally {
+      // Close resources and remove client from the server if disconnected
       closeResources();
       server.removeClient(this);
     }

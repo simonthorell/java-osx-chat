@@ -27,7 +27,7 @@ public class TCPClient implements IChatClient, Runnable {
   @Override
   public void connect() throws IOException {
     // Create a socket and start a new thread to handle incoming messages
-    socket = new Socket(Constants.SERVER_TCP_IP, Constants.TCP_PORT);
+    socket = new Socket(Constants.TCP_SERVER_IP, Constants.TCP_PORT);
     out = new ObjectOutputStream(socket.getOutputStream());
     in = new ObjectInputStream(socket.getInputStream());
     new Thread(this).start();

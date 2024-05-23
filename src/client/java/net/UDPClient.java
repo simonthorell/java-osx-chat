@@ -29,8 +29,8 @@ public class UDPClient implements IChatClient, Runnable {
   // Connect to the UDP multicast group
   @Override
   public void connect() throws IOException {
-    socket = new MulticastSocket(Constants.MULTICAST_PORT);
-    group = InetAddress.getByName(Constants.MULTICAST_GROUP_IP);
+    socket = new MulticastSocket(Constants.UDP_MULTICAST_PORT);
+    group = InetAddress.getByName(Constants.UDP_MULTICAST_IP);
     socket.joinGroup(group);
     new Thread(this).start();
 
@@ -46,7 +46,8 @@ public class UDPClient implements IChatClient, Runnable {
   @Override
   public void sendMessage(ChatMessage message) throws IOException {
     byte[] buf = serialize(message);
-    DatagramPacket packet = new DatagramPacket(buf, buf.length, group, Constants.MULTICAST_PORT);
+    DatagramPacket packet =
+        new DatagramPacket(buf, buf.length, group, Constants.UDP_MULTICAST_PORT);
     socket.send(packet);
   }
 
