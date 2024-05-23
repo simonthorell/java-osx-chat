@@ -17,6 +17,7 @@ public class LoginWindow extends JPanel {
   private JRadioButton tcpButton;
   private JRadioButton udpButton;
 
+  // Constructor
   public LoginWindow() {
     this.setLayout(new BorderLayout());
 

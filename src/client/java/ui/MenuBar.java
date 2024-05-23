@@ -28,6 +28,7 @@ public class MenuBar extends JMenuBar {
   // Menu items for Help menu
   private final JMenuItem aboutMenuItem = new JMenuItem("About ChatUp");
 
+  // Constructor
   public MenuBar() {
     // Setup menus
     setupEditMenu();

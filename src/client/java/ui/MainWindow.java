@@ -15,6 +15,7 @@ public class MainWindow extends JFrame {
   private final LoginWindow loginWindow = new LoginWindow();
   private ChatWindow chatWindow;
 
+  // Constructor
   public MainWindow() {
     this.setTitle("ChatUp"); // Set Window title (App Name)
     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

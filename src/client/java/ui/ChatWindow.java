@@ -21,6 +21,7 @@ public class ChatWindow extends JPanel implements IMessageHandler, IUserListObse
   private String username;
   private JList<String> usersList;
 
+  // Constructor
   public ChatWindow(IChatClient client) {
     this.client = client;
 
